@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<package format="2">
+
+  <name>cdt_superbuild</name>
+  <version>0.0.1</version>
+  <description>Installation setup for CDT laptops. Based on DRS superbuild</description>
+
+  <license>Proprietary</license>
+
+  <author email="matias@robots.ox.ac.uk">Matias Mattamala</author>
+  <maintainer email="matias@robots.ox.ac.uk">Matias Mattamala</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+</package>
