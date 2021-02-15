@@ -100,6 +100,7 @@ sudo apt update
 
 # Python
 sudo pip install virtualenv
+sudo pip install pyttsx
 
 if [ $exit_status -ne 0 ]; then
     exit 1
