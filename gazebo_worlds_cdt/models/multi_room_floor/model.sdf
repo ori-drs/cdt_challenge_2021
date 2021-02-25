@@ -1,0 +1,184 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <model name="multi_room_floor">
+      <pose>0.0 0.0 0 0 0 0</pose>
+      <static>true</static>
+      <link name="lr_room">
+        <visual name="box_visual">
+          <pose>3.75 0 0 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_floor/meshes/wall_box.dae</uri>
+            <scale>7.5 20 0.1</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>3.75 0 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>7.5 20 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+
+      <link name="ul_room">
+        <visual name="box_visual">
+          <pose>16.25 20 0 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_floor/meshes/wall_box.dae</uri>
+            <scale>7.5 20 0.1</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>16.25 20 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>7.5 20 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+
+      <link name="ur_room">
+        <visual name="box_visual">
+          <pose>13.75 6 0 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_floor/meshes/wall_box.dae</uri>
+            <scale>12.5 8 0.1</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>13.75 6 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>12.5 8 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+
+
+      <link name="ur_slot_lower">
+        <visual name="box_visual">
+          <pose>9.25 1 0 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_floor/meshes/wall_box.dae</uri>
+            <scale>3.55 2 0.1</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>9.25 1 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>3.55 2 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+
+
+      <link name="ur_slot_upper">
+        <visual name="box_visual">
+          <pose>17.5 1 0 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_floor/meshes/wall_box.dae</uri>
+            <scale>5.05 2 0.1</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>17.5 1 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>5.05 2 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+
+
+
+      <link name="ll_room">
+        <visual name="box_visual">
+          <pose>6.25 14 0 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_floor/meshes/wall_box.dae</uri>
+            <scale>12.5 8 0.1</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>6.25 14 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>12.25 8 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+
+
+
+
+
+
+      <link name="ur_slot_lower">
+        <visual name="box_visual">
+          <pose>1.75 19 0 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_floor/meshes/wall_box.dae</uri>
+            <scale>3.55 2 0.1</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>1.75 19 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>3.55 2 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+
+
+      <link name="ur_slot_upper">
+        <visual name="box_visual">
+          <pose>10 19 0 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_floor/meshes/wall_box.dae</uri>
+            <scale>5.05 2 0.1</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>10 19 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>5.05 2 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+
+
+
+
+
+
+
+
+    </model>
+</sdf>

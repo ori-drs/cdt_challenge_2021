@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<robot name="base_lidar"  xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="base_lidar" params="name parent max_range min_range translateX translateY translateZ roll pitch yaw *geometry simulation">
+  <!-- param name: Name of the lidar -->
+  <!-- param parent: Parent link for lidar joint -->
+  <!-- param max_range: maximum ray range in m  -->
+  <!-- param min_range:  minimum ray range in m -->
+  <!-- param translateX:  translation for laser_joint -->
+  <!-- param translateY:  translation for laser_joint -->
+  <!-- param translateZ:  translation for laser_joint -->
+  <!-- param gpu_:  substring for hardware accelearation. (default: empty "", otherwise "gpu_")-->
+
+
+  <xacro:property name="min_range" value="0.5"/>
+  <xacro:property name="max_range" value="50.0"/> <!-- was 120 -->
+  <xacro:property name="min_angle" value="-${PI}"/>
+  <xacro:property name="max_angle" value="${PI}"/>
+  <xacro:property name="hz" value="10.0"/>
+  <xacro:property name="samples" value="1024"/>
+  <xacro:property name="lasers" value="16"/> <!-- should have 64 to simulate ouster -->
+  <xacro:property name="collision_range" value="0.3"/>
+  <xacro:property name="noise" value="0.008"/>
+
+  <xacro:include filename="$(find ouster_description)/urdf/ouster.urdf.xacro"/>
+
+  <xacro:os_device parent="base_link" name="os_lidar" simulation="${simulation}">
+    <origin xyz="0.15 0 0.30" rpy="0 0 0.78" />
+  </xacro:os_device>
+
+   <xacro:if value="${simulation}"> 
+    <gazebo reference="os_lidar"> <!-- we want to use ouster here -->
+        <sensor type="ray" name="os1_lidar-VLP">
+          <pose>0 0 0 0 0 0</pose>
+          <visualize>false</visualize>
+          <update_rate>${hz}</update_rate>
+          <ray>
+            <scan>
+              <horizontal>
+                <samples>${samples}</samples>
+                <resolution>1</resolution>
+                <min_angle>${min_angle}</min_angle>
+                <max_angle>${max_angle}</max_angle>
+              </horizontal>
+              <vertical>
+                <samples>${lasers}</samples>
+                <resolution>1</resolution>
+                <!-- was -22.5 to 22.5 should be -/+45 -->
+                <min_angle>-${35*PI/180.0}</min_angle>
+                <max_angle> ${10*PI/180.0}</max_angle>
+              </vertical>
+            </scan>
+            <range>
+              <min>${collision_range}</min>
+              <max>${max_range+1}</max>
+              <resolution>0.001</resolution>
+            </range>
+            <noise>
+              <type>gaussian</type>
+              <mean>0.0</mean>
+              <stddev>0.0</stddev>
+            </noise>
+          </ray>
+          <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_velodyne_laser.so">
+            <topicName>/os_cloud_node/points</topicName>
+            <frameName>os_lidar</frameName> 
+            <min_range>${min_range}</min_range>
+            <max_range>${max_range}</max_range>
+            <gaussianNoise>${noise}</gaussianNoise>
+          </plugin>
+        </sensor>
+    </gazebo>
+
+     <!-- Gazebo plugin - IMU -->
+    <gazebo reference="os_imu">
+        <gravity>true</gravity>
+        <sensor name="imu_sensor" type="imu">
+            <always_on>true</always_on>
+            <update_rate>100</update_rate>
+            <visualize>true</visualize>
+            <topic>${name}/imu</topic>
+            <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                <topicName>/os_cloud_node/imu</topicName>
+                <bodyName>os_imu_link</bodyName>
+                <updateRateHZ>100.0</updateRateHZ>
+                <gaussianNoise>0.0025</gaussianNoise>
+                <xyzOffset>0 0 0</xyzOffset>
+                <rpyOffset>0 0 0</rpyOffset>
+                <frameName>os_imu</frameName>
+            </plugin>
+            <pose>0 0 0 0 0 0</pose>
+        </sensor>
+    </gazebo>
+
+    </xacro:if>
+
+
+    <!--gazebo reference="${name}_laser_link">
+      <sensor type="${gpu_}ray" name="head_hokuyo_sensor">
+        <pose>0 0 0 0 0 0</pose>
+        <visualize>${visualize}</visualize>
+        <update_rate>${update_rate_hz}</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>${ray_count}</samples>
+              <resolution>1</resolution>
+              <min_angle>${-angle}</min_angle>
+              <max_angle>${angle}</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>${min_range}</min>
+            <max>${max_range}</max>
+            <resolution>0.01</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </ray>
+        <plugin name="gazebo_ros_head_${name}_controller" filename="libgazebo_ros_laser.so">
+          <topicName>/scan</topicName>
+          <frameName>${name}_laser_link</frameName>
+        </plugin>
+      </sensor>
+    </gazebo-->
+  </xacro:macro>
+</robot>

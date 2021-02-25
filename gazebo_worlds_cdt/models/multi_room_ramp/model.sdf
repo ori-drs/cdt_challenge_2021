@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+    <model name="multi_room_ramp">
+      <pose>1.0 0.0 0.2 0 0 0</pose>
+      <static>true</static>
+      <link name="left">
+        <visual name="box_visual">
+          <pose>0 1 1 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_ramp/meshes/wall_box.dae</uri>
+            <scale>4 0.1 2</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>0 1 1 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4 0.1 2</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+
+      <link name="right">
+        <visual name="box_visual">
+          <pose>0 -1 1 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_ramp/meshes/wall_box.dae</uri>
+            <scale>4 0.1 2</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>0 -1 1 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4 0.1 2</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+      <link name="endblock">
+        <visual name="box_visual">
+          <pose>2 0 1 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_ramp/meshes/wall_box.dae</uri>
+            <scale>0.1 2 2</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>2 0 1 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.1 2 2</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+      <link name="slope">
+        <visual name="box_visual">
+          <pose>0 0 1 0 1.1 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_ramp/meshes/floor.dae</uri>
+            <scale>0.1 2 4.4</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>0 0 1 0 1.1 0</pose>
+          <geometry>
+            <box>
+              <size>0.1 2 4.4</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+
+      <link name="endblock_upper_guard">
+        <visual name="box_visual">
+          <pose>-2 0 3 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_ramp/meshes/wall_box.dae</uri>
+            <scale>0.1 2 2</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>-2 0 3 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.1 2 2</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+      <link name="left_upper_guard">
+        <visual name="box_visual">
+          <pose>0 1 3 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_ramp/meshes/wall_box.dae</uri>
+            <scale>4 0.1 2</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>0 1 3 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4 0.1 2</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+      <link name="right_upper_guard">
+        <visual name="box_visual">
+          <pose>0 -1 3 0 0 0</pose>
+          <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/multi_room_ramp/meshes/wall_box.dae</uri>
+            <scale>4 0.1 2</scale>
+          </mesh>
+          </geometry>
+        </visual>
+        <collision name="box_collision">
+          <pose>0 -1 3 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4 0.1 2</size>
+            </box>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+</sdf>

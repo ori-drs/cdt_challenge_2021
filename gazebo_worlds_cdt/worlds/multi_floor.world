@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>    
+    <!-- level 1-->
+    <include>
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+      <uri>model://gazebo_worlds_cdt/models/multi_room</uri>
+    </include>
+    <include>
+      <static>true</static>
+      <pose>13 1 0 0 0 0</pose>
+      <uri>model://gazebo_worlds_cdt/models/multi_room_ramp</uri>
+    </include>
+    <include>
+      <static>true</static>
+      <pose>5.5 19 0 0 0 0</pose>
+      <uri>model://gazebo_worlds_cdt/models/multi_room_ramp</uri>
+    </include>
+    <include>
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+      <uri>model://gazebo_worlds_cdt/models/multi_room_floor</uri>
+    </include>
+    <!-- level 2-->
+    <include>
+      <static>true</static>
+      <pose>0 0 2 0 0 0</pose>
+      <uri>model://gazebo_worlds_cdt/models/multi_room_floor</uri>
+    </include>
+    <include>
+      <static>true</static>
+      <pose>0 0 2 0 0 0</pose>
+      <uri>model://gazebo_worlds_cdt/models/multi_room</uri>
+    </include>
+    <physics type="ode">
+      <gravity>0 0 -9.81</gravity>
+    </physics>
+    <light name='user_point_light_0' type='point'>
+      <pose frame=''>-4.98064 4.68115 12 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation>
+        <range>20</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <direction>0 0 -1</direction>
+    </light>
+  </world>
+</sdf>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+
+  <env name="ROSCONSOLE_CONFIG_FILE" value="$(find elevation_mapping_drs)/config/rosconsole.conf"/>
+
+  <!-- Set the point cloud sensor type -->
+  <arg name="sensor" default="velodyne"/>
+
+  <!-- Launch elevation mapping -->
+  <node pkg="elevation_mapping" type="elevation_mapping" name="elevation_mapping_lidar" output="screen">
+    <rosparam command="load" file="$(find jackal_runtime_cdt)/config/elevation_mapping/ouster_jackal_sim.yaml"/>
+    <rosparam if="$(eval sensor == 'actuated_lidar')"        command="load" file="$(find elevation_mapping)/config/sensor_processors/hokuyo_utm-30lx.yaml"/>
+    <rosparam if="$(eval sensor == 'velodyne')"              command="load" file="$(find elevation_mapping)/config/sensor_processors/velodyne_HDL-32E.yaml"/>
+    <rosparam if="$(eval sensor == 'realsense_zr300')"       command="load" file="$(find elevation_mapping)/config/sensor_processors/realsense_ZR300.yaml"/>
+    <rosparam if="$(eval sensor == 'realsense_d435')"        command="load" file="$(find elevation_mapping)/config/sensor_processors/realsense_d435.yaml"/>
+    <rosparam if="$(eval sensor == 'vlp16_rsD435')"          command="load" file="$(find elevation_mapping)/config/sensor_processors/velodyne_HDL-32E.yaml"/>
+  </node>
+
+</launch>

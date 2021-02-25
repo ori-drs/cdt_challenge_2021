@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="rooster" params="name simulation:=false
+                                           camera_front:=false
+                                           camera_rear:=false
+                                           lidar:=true">
+
+    <!-- Included xacros -->
+    <xacro:include filename="$(find jackal_description_cdt)/urdf/lidar/base_lidar.xacro"/>
+
+    <!-- Properties -->
+    <xacro:property name="box_width" value="0.20" />
+    <xacro:property name="box_depth" value="0.17"/>
+    <xacro:property name="box_height" value="0.13" />  
+
+    <!--
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="${box_width} ${box_depth} ${box_height}"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+
+    </link>
+
+    <joint name="box_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}"/>
+      <origin xyz="0.05 0.0 ${box_height/2 + 0.15}" rpy="0 0 ${PI/2}"/>
+    </joint>
+    -->
+
+    <!-- LIDAR -->
+    <xacro:if value="${lidar}">
+      <xacro:base_lidar name="horizontal"
+                        parent="${name}"
+                        max_range="10"
+                        min_range="0.1"
+                        translateX="0"
+                        translateY="0"
+                        translateZ="${box_height/2}"
+                        roll="0"
+                        pitch="0"
+                        yaw="-${PI/2}"
+                        simulation="${simulation}">
+                        <cylinder length="0.0005" radius="0.023"/>
+                        <!-- yaw was 0 mfallon. now facing forward-->
+      </xacro:base_lidar>
+    </xacro:if>
+
+
+  </xacro:macro>
+</robot>

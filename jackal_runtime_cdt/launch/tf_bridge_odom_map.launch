@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<launch>
+  <node name="tf_bridge_odom_map" pkg="icp_odometry_ros" type="tf_bridge" output="screen">
+    <param name="icp_topic"            type="string" value="/pronto_slam/slam_last_pose" />
+    <param name="icp_fixed_frame"      type="string" value="map" />
+    <param name="odometry_fixed_frame" type="string" value="odom" />
+    <param name="odometry_base_frame"  type="string" value="base_link" />
+    <param name="remove_pitch_roll"    type="bool" value="true" />
+  </node>
+</launch>
