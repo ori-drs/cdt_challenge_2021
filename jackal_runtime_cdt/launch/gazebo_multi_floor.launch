@@ -5,7 +5,7 @@
   <arg name="y" default="1.0" />
   <arg name="z" default="1.0" />
   <arg name="gui" default="false" />
-  <arg name="world_name"         default="$(find gazebo_worlds_drs)/worlds/multi_floor.world"/>
+  <arg name="world_name"         default="$(find gazebo_worlds_cdt)/worlds/multi_floor.world"/>
 
   <include file="$(find jackal_runtime_cdt)/launch/gazebo_empty_world.launch">
     <arg name="x"   value="$(arg x)" />

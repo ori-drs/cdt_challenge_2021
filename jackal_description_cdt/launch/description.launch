@@ -5,7 +5,6 @@
   <!-- the following seems to work too when in devel space, but not in install_isolated -->
   <!-- <arg name="env_runner" value="env_run" /> -->
 
-  <param name="robot_description"
-         command="xacro $(find jackal_description_cdt)/urdf/jackal.urdf.xacro --inorder" />
+  <param name="robot_description" command="xacro --inorder '$(find jackal_description_cdt)/urdf/jackal.urdf.xacro'" />
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 </launch>

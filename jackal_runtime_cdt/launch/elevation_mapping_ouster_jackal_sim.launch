@@ -2,7 +2,7 @@
 
 <launch>
 
-  <env name="ROSCONSOLE_CONFIG_FILE" value="$(find elevation_mapping_drs)/config/rosconsole.conf"/>
+  <env name="ROSCONSOLE_CONFIG_FILE" value="$(find jackal_runtime_cdt)/config/elevation_mapping/rosconsole.conf"/>
 
   <!-- Set the point cloud sensor type -->
   <arg name="sensor" default="velodyne"/>

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from drs_msgs.msg import RobotState
+from cdt_msgs.msg import RobotState
 from sensor_msgs.msg import JointState
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseWithCovarianceStamped

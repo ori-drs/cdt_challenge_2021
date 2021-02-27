@@ -3,7 +3,7 @@
 
 
 # Ouster packages
-git clone git@github.com:ouster-lidar/ouster_example.git
+git clone git@github.com:ori-drs/ouster_example.git
 
 # Elevation mapping
 git clone --branch release git@github.com:ANYbotics/elevation_mapping.git
