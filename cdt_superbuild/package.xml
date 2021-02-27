@@ -12,5 +12,11 @@
   <maintainer email="matias@robots.ox.ac.uk">Matias Mattamala</maintainer>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>gazebo_worlds_cdt</build_depend>
+  <build_depend>jackal_description_cdt</build_depend>
+  <build_depend>jackal_runtime_cdt</build_depend>
+  <build_depend>object_detector_cdt</build_depend>
+  <build_depend>world_modelling_cdt</build_depend>
+  <build_depend>world_explorer_cdt</build_depend>
 
 </package>

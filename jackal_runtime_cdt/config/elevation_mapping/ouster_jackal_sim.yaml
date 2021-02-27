@@ -4,7 +4,7 @@ robot_base_frame_id: base_link
 sensor_frame_id: os_lidar
 robot_pose_with_covariance_topic: /state_estimator/pose_in_odom
 robot_pose_cache_size: 500
-point_cloud_topic: /os_cloud_node/box_filter_points
+point_cloud_topic: /os_cloud_node/points
 track_point_frame_id: base_link
 track_point_x: 0.0
 track_point_y: 0.0

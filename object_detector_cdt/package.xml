@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <name>object_detector_cdt</name>
+  <version>0.7.0</version>
+  <description>Object Detection Task package for the CDT challenge</description>
+
+  <license>Private</license>
+
+  <author email="matias@robots.ox.ac.uk">Matias Mattamala</author>
+  <maintainer email="matias@robots.ox.ac.uk">Matias Mattamala</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+
+  <export>
+  </export>
+</package>

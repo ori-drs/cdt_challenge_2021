@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-project(jackal_runtime_cdt)
+project(world_modelling_cdt)
 add_compile_options(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
-  eigen_conversions
-  tf_conversions
+  roscpp
 )
 
 
@@ -22,7 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS
 #    include
-  CATKIN_DEPENDS eigen_conversions
+  CATKIN_DEPENDS  # pronto_slam vilens
 )
 
 ###########
@@ -33,6 +32,8 @@ include_directories(
 #  include
   ${catkin_INCLUDE_DIRS}
 )
+
+
 
 #############
 ## Install ##
