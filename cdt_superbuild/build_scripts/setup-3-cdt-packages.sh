@@ -26,9 +26,15 @@ ros-melodic-rqt-multiplot
 ros-melodic-hector-models
 ros-melodic-grid-map-pcl
 ros-melodic-octomap-ros
+ros-melodic-gazebo-ros
 ros-melodic-gazebo-ros-control
+ros-melodic-robot-controllers
+ros-melodic-controller-interface
 ros-melodic-joint-state-controller
 ros-melodic-diff-drive-controller
+ros-melodic-velocity-controller
+ros-melodic-effort-controllers
+ros-melodic-position-controllers
 ros-melodic-twist-mux
 ros-melodic-ros-control
 ros-melodic-mongodb-store-msgs
@@ -50,6 +56,7 @@ ros-melodic-grid-map-sdf
 ros-melodic-grid-map-cv
 ros-melodic-velodyne-msgs
 ros-melodic-velodyne-pointcloud
+ros-melodic-velodyne-gazebo-plugins
 "
 
 if [ $exit_status -ne 0 ]; then
