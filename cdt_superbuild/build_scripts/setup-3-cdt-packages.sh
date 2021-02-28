@@ -32,7 +32,7 @@ ros-melodic-robot-controllers
 ros-melodic-controller-interface
 ros-melodic-joint-state-controller
 ros-melodic-diff-drive-controller
-ros-melodic-velocity-controller
+ros-melodic-velocity-controllers
 ros-melodic-effort-controllers
 ros-melodic-position-controllers
 ros-melodic-twist-mux
