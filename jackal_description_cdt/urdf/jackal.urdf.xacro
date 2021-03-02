@@ -26,6 +26,7 @@
 
    <!--  Import modules for the EXTRM platform  -->
   <xacro:include filename="$(find jackal_description_cdt)/urdf/rooster.xacro"/>
+  <xacro:include filename="$(find jackal_description_cdt)/urdf/camera/base_camera.xacro"/>
 
 
   <xacro:macro name="wheel" params="prefix *joint_pose">
@@ -267,6 +268,9 @@
                  camera_rear="false"
                  lidar="true"
                  simulation="true"/>
+  <xacro:base_camera name="camera"
+                     parent="base_link"
+                     simulation="true"/>
 
   <!-- Optional custom includes. -->
   <xacro:include filename="$(optenv JACKAL_URDF_EXTRAS empty.urdf)" />
