@@ -13,11 +13,15 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>cdt_msgs</build_depend>
+  <build_depend>cdt_rqt</build_depend>
+  <build_depend>cdt_visualizations</build_depend>
   <build_depend>gazebo_worlds_cdt</build_depend>
   <build_depend>jackal_description_cdt</build_depend>
   <build_depend>jackal_runtime_cdt</build_depend>
+  <build_depend>elevation_map_filter_cdt</build_depend>
   <build_depend>object_detector_cdt</build_depend>
   <build_depend>world_modelling_cdt</build_depend>
   <build_depend>world_explorer_cdt</build_depend>
+  <build_depend>position_controller_cdt</build_depend>
 
 </package>

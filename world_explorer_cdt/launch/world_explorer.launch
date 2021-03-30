@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+  <!-- Set the topics -->
+  <arg name="input_map_topic"         default="/traversability"/>
+  <arg name="input_frontiers_topic"   default="/frontiers"/>
+  <arg name="input_graph_topic"       default="/exploration_graph"/>
+  <arg name="input_pos_ctrl_topic"    default="/position_controller/status"/>
+  <arg name="input_base_frame"        default="base_link"/>
+  <arg name="goal_frame"              default="odom"/>
+  <arg name="planning_time"           default="1.5"/>
+  <arg name="path_execute_limit"      default="50"/> <!-- [0-100] percent of path that is to be executed -->
+  <arg name="output_frontiers_topic"  default="/frontiers"/>
+  <arg name="launch_prefix"           default=""/>
+  
+
+  <!-- Launch object detector -->
+  <node pkg="world_explorer_cdt" 
+        type="world_explorer_cdt_node" 
+        name="world_explorer" 
+        output="screen"
+        launch-prefix="$(arg launch_prefix)">
+    <param name="input_map_topic"           value="$(arg input_map_topic)"/>
+    <param name="input_frontiers_topic"     value="$(arg input_frontiers_topic)"/>
+    <param name="input_graph_topic"         value="$(arg input_graph_topic)"/>
+    <param name="input_pos_ctrl_topic"      value="$(arg input_pos_ctrl_topic)"/>
+    <param name="input_base_frame"          value="$(arg input_base_frame)"/>
+    <param name="goal_frame"                value="$(arg goal_frame)"/>
+    <param name="planning_time"             value="$(arg planning_time)"/>
+    <param name="path_execute_limit"        value="$(arg path_execute_limit)"/>
+  </node>
+
+</launch>

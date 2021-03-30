@@ -1,0 +1,116 @@
+grid_map_filters:
+
+  - name: buffer_normalizer
+    type: gridMapFilters/BufferNormalizerFilter
+
+  # # Duplicate layer.
+  - name: duplicate
+    type: gridMapFilters/DuplicationFilter
+    params:
+      input_layer: elevation
+      output_layer: elevation_inpainted
+
+  # Delete color layer.
+  - name: delete_original_layers
+    type: gridMapFilters/DeletionFilter
+    params:
+      layers: [color] # List of layers.
+
+  # Reduce noise with a radial blurring filter.
+  - name: mean_in_radius
+    type: gridMapFilters/MeanInRadiusFilter
+    params:
+      input_layer: elevation_inpainted
+      output_layer: elevation_smooth
+      radius: 0.0
+
+  # Compute surface normals.
+  - name: surface_normals
+    type: gridMapFilters/NormalVectorsFilter
+    params:
+      input_layer: elevation_smooth
+      output_layers_prefix: normal_
+      radius: 0.15
+      normal_vector_positive_axis: z
+
+  # Add a color layer for visualization based on the surface normal.
+  - name: normal_color_map
+    type: gridMapFilters/NormalColorMapFilter
+    params:
+      input_layers_prefix: normal_
+      output_layer: normal_color
+
+  # Compute roughness as absolute difference from map to smoothened map.
+  - name: roughness
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: roughness
+      expression: abs(elevation_inpainted - elevation_smooth)
+
+  # Compute slope from surface normal.
+  - name: slope
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: slope
+      expression: acos(normal_z)      
+
+  # Duplicate layer
+  - name: duplicate_slope_threshold
+    type: gridMapFilters/DuplicationFilter
+    params:
+      input_layer: slope
+      output_layer: slope_thresh
+
+  # # Add a normal vector threshold to generate a notion of traversability
+  # - name: lower_threshold
+  #   type: gridMapFilters/ThresholdFilter
+  #   params:
+  #     condition_layer: slope_thresh
+  #     output_layer: slope_thresh
+  #     lower_threshold: 0.01
+  #     # upper_threshold: 0.01
+  #     set_to: 1.0
+
+  # if slope above threshold -> not traversable, set to zero
+  - name: upper_slope_threshold
+    type: gridMapFilters/ThresholdFilter
+    params:
+      condition_layer: slope_thresh
+      output_layer: slope_thresh
+      upper_threshold: 0.04
+      set_to: 100.0
+
+  # duplicate 
+  - name: duplicate_elevation_threshold
+    type: gridMapFilters/DuplicationFilter
+    params:
+      input_layer: elevation
+      output_layer: elevation_thresh
+
+  # filter elevation map
+  - name: upper_elevation_threshold
+    type: gridMapFilters/ThresholdFilter
+    params:
+      condition_layer: elevation_thresh
+      output_layer: elevation_thresh
+      upper_threshold: 0.001
+      set_to: 100.0
+
+  # - name: math_expression
+  #   type: gridMapFilters/MathExpressionFilter
+  #   params:
+  #     output_layer: traversability
+  #     expression: 
+      # expression: acos(normal_vectors_z) # Slope.
+      # expression: abs(elevation - elevation_smooth) # Surface roughness.
+      # expression: 0.5 * (1.0 - (slope / 0.6)) + 0.5 * (1.0 - (roughness / 0.1)) # Weighted and normalized sum.
+
+      # find more filters: https://github.com/ANYbotics/grid_map/blob/381b30ecefd261cbfc8f1d296dac6b587a062c28/README.md#grid_map_filters
+  
+  # Inpaint elevation
+  - name: elevation_inpaint
+    type: gridMapCv/InpaintFilter
+    params:
+      input_layer: elevation
+      output_layer: elevation_inpainted
+      radius: 0.05 # in m

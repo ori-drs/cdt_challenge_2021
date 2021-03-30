@@ -1,0 +1,84 @@
+{
+  "keys": {},
+  "groups": {
+    "mainwindow": {
+      "keys": {
+        "geometry": {
+          "repr(QByteArray.hex)": "QtCore.QByteArray(b'01d9d0cb000300000000000000000000000009ff0000059f0000000000000025000009ff0000059f00000001000000000a000000000000000025000009ff0000059f')",
+          "type": "repr(QByteArray.hex)",
+          "pretty-print": "               %            %    "
+        },
+        "state": {
+          "repr(QByteArray.hex)": "QtCore.QByteArray(b'000000ff00000000fd000000010000000300000a000000054ffc0100000001fc0000000000000a00000004b000fffffffc0200000002fb00000066007200710074005f007200760069007a005f0077007200610070007000650072005f005f005200760069007a0057007200610070007000650072005f005f0031005f005f005200760069007a00570072006100700070006500720057006900640067006500740100000016000004d0000001a500fffffffb0000003a006300640074005f007200710074005f005f0043004400540020004700550049005f005f0031005f005f0043006400740047007500690055006901000004ec00000079000000790000007900000a000000000000000004000000040000000800000008fc00000001000000030000000100000036004d0069006e0069006d0069007a006500640044006f0063006b00570069006400670065007400730054006f006f006c0062006100720000000000ffffffff0000000000000000')",
+          "type": "repr(QByteArray.hex)",
+          "pretty-print": "                                                                                                                            y y y                                                        "
+        }
+      },
+      "groups": {
+        "toolbar_areas": {
+          "keys": {
+            "MinimizedDockWidgetsToolbar": {
+              "repr": "8",
+              "type": "repr"
+            }
+          },
+          "groups": {}
+        }
+      }
+    },
+    "pluginmanager": {
+      "keys": {
+        "running-plugins": {
+          "repr": "{'cdt_rqt/CDT GUI': [1], 'rqt_rviz_wrapper/RvizWrapper': [1]}",
+          "type": "repr"
+        }
+      },
+      "groups": {
+        "plugin__cdt_rqt__CDT GUI__1": {
+          "keys": {},
+          "groups": {
+            "dock_widget__CdtGuiUi": {
+              "keys": {
+                "dock_widget_title": {
+                  "repr": "'CDT GUI'",
+                  "type": "repr"
+                },
+                "dockable": {
+                  "repr": "True",
+                  "type": "repr"
+                },
+                "parent": {
+                  "repr": "None",
+                  "type": "repr"
+                }
+              },
+              "groups": {}
+            }
+          }
+        },
+        "plugin__rqt_rviz_wrapper__RvizWrapper__1": {
+          "keys": {},
+          "groups": {
+            "dock_widget__RvizWrapperWidget": {
+              "keys": {
+                "dock_widget_title": {
+                  "repr": "'RViz Wrapper'",
+                  "type": "repr"
+                },
+                "dockable": {
+                  "repr": "True",
+                  "type": "repr"
+                },
+                "parent": {
+                  "repr": "None",
+                  "type": "repr"
+                }
+              },
+              "groups": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}

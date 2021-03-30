@@ -12,9 +12,18 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  Frontiers.msg
+  Graph.msg
+  GraphNode.msg
   RobotState.msg
+  Object.msg
+  ObjectList.msg
 )
 
+add_service_files(
+  FILES
+  ToggleExploration.srv
+)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(

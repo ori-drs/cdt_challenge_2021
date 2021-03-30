@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name="arena_simple">
+    <pose>0 0 0 0 0 0</pose>
+    <static>true</static>
+    <link name="arena_simple_link">
+      <collision name="arena_simple_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/arena_simple/meshes/arena_simple.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="arena_simple_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/arena_simple/meshes/arena_simple.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link> 
+  </model>
+</sdf>

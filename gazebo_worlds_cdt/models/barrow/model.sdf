@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name="barrow">
+    <pose>0 0 0 0 0 0</pose>
+    <static>true</static>
+    <link name="barrow_link">
+      <collision name="barrow_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/barrow/meshes/barrow.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="barrow_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/barrow/meshes/barrow.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link> 
+  </model>
+</sdf>

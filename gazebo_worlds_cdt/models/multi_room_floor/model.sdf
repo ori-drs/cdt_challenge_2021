@@ -64,7 +64,7 @@
       </link>
 
 
-      <link name="ur_slot_lower">
+      <link name="lr_slot_lower">
         <visual name="box_visual">
           <pose>9.25 1 0 0 0 0</pose>
           <geometry>
@@ -85,7 +85,7 @@
       </link>
 
 
-      <link name="ur_slot_upper">
+      <link name="lr_slot_upper">
         <visual name="box_visual">
           <pose>17.5 1 0 0 0 0</pose>
           <geometry>

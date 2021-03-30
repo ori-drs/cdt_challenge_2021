@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>position_controller_cdt</name>
+  <version>0.7.0</version>
+  <description>Position Controller package for the CDT challenge</description>
+
+  <license>Private</license>
+
+  <author email="matias@robots.ox.ac.uk">Matias Mattamala</author>
+  <maintainer email="matias@robots.ox.ac.uk">Matias Mattamala</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>eigen_conversions</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf</depend>
+  <depend>cdt_msgs</depend>
+
+  <export>
+  </export>
+</package>

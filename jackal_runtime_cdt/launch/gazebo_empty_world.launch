@@ -1,10 +1,11 @@
 <launch>
-  <arg name="use_sim_time" default="true" />
-  <arg name="gui" default="true" />
-  <arg name="headless" default="false" />
-  <arg name="world_name" default="$(find jackal_gazebo)/worlds/jackal_race.world" />
+  <arg name="use_sim_time"     default="true" />
+  <arg name="gui"              default="false" />
+  <arg name="headless"         default="false" />
+  <arg name="world_name"       default="$(find gazebo_worlds_cdt)/worlds/race.world" />
+  <arg name="realistic_state"  default="false" />
 
-  <arg name="x" default="0.0" />
+  <arg name="x" default="4.0" />
   <arg name="y" default="0.0" />
   <arg name="z" default="1.0" />
 
@@ -32,13 +33,20 @@
   <include file="$(find jackal_description_cdt)/launch/description.launch">
     <arg name="config" value="$(arg config)" />
   </include>
-  <include file="$(find jackal_control)/launch/control.launch" />
+  <include file="$(find jackal_control)/launch/control.launch">
+    <arg name="enable_ekf" value="$(arg realistic_state)"/>
+  </include>
   <include file="$(find jackal_control)/launch/teleop.launch">
     <arg name="joystick" value="false"/>
   </include>
 
+  <!-- Robot state -->
+  <node unless="$(arg realistic_state)" name="perfect_jackal_state_publisher" pkg="jackal_runtime_cdt" type="perfect_jackal_to_robot_state.py" output="screen"/>
+  <node if="$(arg realistic_state)"     name="jackal_state_publisher" pkg="jackal_runtime_cdt" type="jackal_to_robot_state.py"  output="screen"/>
+
   <!-- Spawn Jackal -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
 	      args="-urdf -model jackal -param robot_description -x $(arg x) -y $(arg y) -z $(arg z)" />
+
 </launch>
 

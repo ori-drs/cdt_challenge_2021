@@ -13,7 +13,7 @@
 
 
   <xacro:property name="min_range" value="0.5"/>
-  <xacro:property name="max_range" value="50.0"/> <!-- was 120 -->
+  <!-- xacro:property name="max_range" value="50.0"/> <!- was 120 -->
   <xacro:property name="min_angle" value="-${PI}"/>
   <xacro:property name="max_angle" value="${PI}"/>
   <xacro:property name="hz" value="10.0"/>
@@ -52,7 +52,7 @@
             </scan>
             <range>
               <min>${collision_range}</min>
-              <max>${max_range+1}</max>
+              <max>${max_range}</max>
               <resolution>0.001</resolution>
             </range>
             <noise>

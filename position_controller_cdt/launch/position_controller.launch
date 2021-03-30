@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+  <!-- Set the topics -->
+  <arg name="input_goal_topic"                  default="/world_explorer/goal"/>
+  <arg name="input_base_frame"                  default="/base_link"/>
+  <arg name="input_goal_distance_threshold"     default="0.5"/>
+  <arg name="input_goal_orientation_threshold"  default="1.0"/>
+  <arg name="output_twist_topic"                default="/cmd_vel"/>
+  <arg name="control_rate"                      default="100.0"/>
+  <arg name="linear_gain"                       default="0.2"/>
+  <arg name="heading_gain"                      default="4.0"/>
+  <arg name="orientation_gain"                  default="0.0"/>
+
+  <!-- Launch object detector -->
+  <node pkg="position_controller_cdt" type="position_controller_cdt_node" name="position_controller" output="screen">
+    <param name="input_goal_topic"                  value="$(arg input_goal_topic)"/>
+    <param name="input_base_frame"                  value="$(arg input_base_frame)"/>
+    <param name="input_goal_distance_threshold"     value="$(arg input_goal_distance_threshold)"/>
+    <param name="input_goal_orientation_threshold"  value="$(arg input_goal_orientation_threshold)"/>
+    <param name="output_twist_topic"                value="$(arg output_twist_topic)"/>
+    <param name="control_rate"                      value="$(arg control_rate)"/>
+    <param name="linear_gain"                       value="$(arg linear_gain)"/>
+    <param name="heading_gain"                      value="$(arg heading_gain)"/>
+    <param name="orientation_gain"                  value="$(arg orientation_gain)"/>
+  </node>
+
+</launch>

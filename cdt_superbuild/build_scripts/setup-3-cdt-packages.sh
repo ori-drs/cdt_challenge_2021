@@ -57,6 +57,7 @@ ros-melodic-grid-map-cv
 ros-melodic-velodyne-msgs
 ros-melodic-velodyne-pointcloud
 ros-melodic-velodyne-gazebo-plugins
+ros-melodic-ompl
 "
 
 if [ $exit_status -ne 0 ]; then

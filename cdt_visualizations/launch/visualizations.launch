@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+  <!-- Set the topics -->
+  <arg name="input_map_topic"   default="/elevation_mapping_lidar/elevation_map_filtered"/>
+  <arg name="input_fixed_frame" default="odom"/>
+  <arg name="input_base_frame"  default="base_link"/>
+  <arg name="world"             default="arena_simple"/>
+
+  <!-- Launch explored space visualization -->
+  <node pkg="cdt_visualizations" type="explored_space_vis_node" name="explored_space_vis" output="screen">
+    <param name="input_map_topic"              value="$(arg input_map_topic)"/>
+    <param name="input_fixed_frame"            value="$(arg input_fixed_frame)"/>
+    <param name="input_base_frame"             value="$(arg input_base_frame)"/>
+
+    <param name="elevation_threshold"         value="0.1"/>
+    <param name="explored_space_length"       value="16.0"/>
+    <param name="explored_space_resolution"   value="0.25"/>
+
+    <param name="max_distance_for_explored"    value="5.0"/>
+    <param name="search_angle_resolution"      value="5"/> <!-- Degrees -->
+  
+  </node>
+
+  <!-- General visualizations -->
+  <node pkg="cdt_visualizations" type="publish_visualizations.py" name="cdt_visualizations">
+    <param name="world"  value="$(arg world)"/>
+  </node>
+
+</launch>

@@ -1,0 +1,17 @@
+<library path="src">
+  <class name="CDT GUI" type="cdt_rqt.cdt_gui.CdtGui" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      User interface for the CDT system
+      Infamously based on VILENS rqt
+    </description>
+    <qtgui>
+      <group>
+        <label>DRS</label>
+	      <icon type="theme">folder</icon>
+      </group>
+      <label>CDT GUI</label>
+        <icon type="theme">help-about</icon>
+        <statustip>User interface for the CDT system.</statustip>
+    </qtgui>
+  </class>
+</library>

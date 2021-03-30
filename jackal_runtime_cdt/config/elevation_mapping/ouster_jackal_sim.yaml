@@ -16,8 +16,8 @@ sensor_processor/ignore_points_above: 0.8
 robot_motion_map_update/covariance_scale: 0.01
 
 # Map.
-length_in_x: 16.0
-length_in_y: 16.0
+length_in_x: 12.0
+length_in_y: 12.0
 position_x: 0.0
 position_y: 0.0
 resolution: 0.08

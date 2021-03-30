@@ -34,7 +34,7 @@
     <xacro:if value="${lidar}">
       <xacro:base_lidar name="horizontal"
                         parent="${name}"
-                        max_range="10"
+                        max_range="5"
                         min_range="0.1"
                         translateX="0"
                         translateY="0"

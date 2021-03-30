@@ -5,23 +5,33 @@ add_compile_options(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  eigen_conversions
+  cv_bridge
+  geometry_msgs
+  image_transport
+  std_msgs
+  tf2
+  tf2_ros
+  tf
+  cdt_msgs
 )
 
 
 #catkin_python_setup()
 
-## Generate added messages and services with any dependencies listed here
-#generate_messages(
-#   DEPENDENCIES
-#   geometry_msgs
-#   std_msgs  # Or other packages containing msgs
-#   actionlib_msgs
-#)
-
 catkin_package(
-  INCLUDE_DIRS
-#    include
-  CATKIN_DEPENDS  # pronto_slam vilens
+  INCLUDE_DIRS include
+  CATKIN_DEPENDS roscpp
+                 eigen_conversions
+                 cv_bridge
+                 geometry_msgs
+                 image_transport
+                 std_msgs
+                 tf2
+                 tf2_ros
+                 tf
+                 cdt_msgs
+  DEPENDS OpenCV
 )
 
 ###########
@@ -29,11 +39,24 @@ catkin_package(
 ###########
 
 include_directories(
-#  include
+  include
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
 )
 
+# Create library
+add_library(${PROJECT_NAME}
+            src/object_detector_cdt/object_detector.cpp
+)
 
+add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}
+                      ${catkin_LIBRARIES}
+                      ${OpenCV_LIBS})
+
+# Create node
+add_executable(${PROJECT_NAME}_node  src/object_detector_node.cpp)
+target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME})
 
 #############
 ## Install ##
@@ -44,7 +67,6 @@ install(TARGETS ${TARGETS}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-
 
 # Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/

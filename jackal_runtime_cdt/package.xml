@@ -11,9 +11,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>eigen_conversions</depend>
   <depend>tf_conversions</depend>
-<!--  <depend>pronto_slam</depend>
-  <depend>vilens</depend>
--->
   <export>
   </export>
 </package>

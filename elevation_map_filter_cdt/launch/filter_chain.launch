@@ -1,0 +1,17 @@
+<launch>
+  <arg name="input_topic"           default="/elevation_mapping_lidar/elevation_map"/>
+  <arg name="output_topic"          default="/elevation_mapping_lidar/elevation_map_filtered"/>
+  <arg name="filter_chain_config"   default="$(find elevation_map_filter_cdt)/config/filter_chain.yaml"/>
+
+  <!-- Elevation map filter node. -->
+  <node pkg="elevation_map_filter_cdt" type="elevation_map_filter_cdt_node" name="elevation_map_filter" output="log">
+    <!-- Input topic -->
+    <param name="input_topic" value="$(arg input_topic)" />
+    <!-- Output topic -->
+    <param name="output_topic" value="$(arg output_topic)" />
+
+    <!-- Load grid map filter chain configuration -->
+    <rosparam command="load" file="$(arg filter_chain_config)" />
+  </node>
+
+</launch>

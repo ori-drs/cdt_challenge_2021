@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <world name="arena">
+    <!-- <include>
+      <uri>model://ground_plane</uri>
+    </include> -->
+
+    <include>
+      <uri>model://sun</uri>
+      <pose>0.3 0.2 5.0 0 0 0</pose>
+      <cast_shadows>false</cast_shadows>
+    </include>
+
+    <model name="arena">
+      <pose>0 0 0 0 0 0</pose>
+      <static>true</static>
+      <link name="arena_link">
+        <collision name="arena_collision">
+          <pose>8 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://gazebo_worlds_cdt/models/arena/meshes/arena.dae</uri>
+              <scale>1. 1. 1.</scale>
+            </mesh>
+          </geometry>
+        </collision>
+
+        <visual name="arena_visual">
+          <pose>8 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://gazebo_worlds_cdt/models/arena/meshes/arena.dae</uri>
+              <scale>1. 1. 1.</scale>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- barrel -->
+    <model name="barrel">
+      <pose>1 -6 0 0 0 0</pose>
+      <static>true</static>
+      <link name="barrel_link">
+        <collision name="barrel_collision">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://gazebo_worlds_cdt/models/barrel/meshes/barrel.dae</uri>
+              <scale>1. 1. 1.</scale>
+            </mesh>
+          </geometry>
+        </collision>
+
+        <visual name="barrel_visual">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://gazebo_worlds_cdt/models/barrel/meshes/barrel.dae</uri>
+              <scale>1. 1. 1.</scale>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- barrow -->
+    <model name="barrow">
+      <pose>7 7 0 0 0 0</pose>
+      <static>true</static>
+      <link name="barrow_link">
+        <collision name="barrow_collision">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://gazebo_worlds_cdt/models/barrow/meshes/barrow.dae</uri>
+              <scale>1. 1. 1.</scale>
+            </mesh>
+          </geometry>
+        </collision>
+
+        <visual name="barrow_visual">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://gazebo_worlds_cdt/models/barrow/meshes/barrow.dae</uri>
+              <scale>1. 1. 1.</scale>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- computer -->
+    <model name="computer">
+      <pose>-7.2 -7.5 0.3 0 0 0</pose>
+      <static>true</static>
+      <link name="computer_link">
+        <collision name="computer_collision">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://gazebo_worlds_cdt/models/computer/meshes/computer.dae</uri>
+              <scale>1. 1. 1.</scale>
+            </mesh>
+          </geometry>
+        </collision>
+
+        <visual name="computer_visual">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://gazebo_worlds_cdt/models/computer/meshes/computer.dae</uri>
+              <scale>1. 1. 1.</scale>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- dog -->
+    <model name="dog">
+      <pose>-2 6 0 0 0 0</pose>
+      <static>true</static>
+      <link name="dog_link">
+        <collision name="dog_collision">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://gazebo_worlds_cdt/models/dog/meshes/dog.dae</uri>
+              <scale>1. 1. 1.</scale>
+            </mesh>
+          </geometry>
+        </collision>
+
+        <visual name="dog_visual">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>model://gazebo_worlds_cdt/models/dog/meshes/dog.dae</uri>
+              <scale>1. 1. 1.</scale>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <physics type="ode">
+      <gravity>0 0 -9.81</gravity>
+    </physics>
+  </world>
+</sdf>

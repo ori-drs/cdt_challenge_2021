@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+  <!-- Set the topics -->
+  <arg name="input_image_topic"     default="/camera/image_raw"/>
+  <arg name="output_objects_topic"  default="/detected_objects"/>
+  <arg name="input_base_frame"      default="base_link"/>
+  <arg name="input_fixed_frame"     default="odom"/>
+
+  <!-- Launch object detector -->
+  <node pkg="object_detector_cdt" type="object_detector_cdt_node" name="object_detector" output="screen">
+    <param name="input_image_topic"      value="$(arg input_image_topic)"/>
+    <param name="output_objects_topic"   value="$(arg output_objects_topic)"/>
+    <param name="input_base_frame"       value="$(arg input_base_frame)"/>
+    <param name="input_fixed_frame"      value="$(arg input_fixed_frame)"/>
+  </node>
+
+</launch>

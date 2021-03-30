@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name="dog">
+    <pose>0 0 0 0 0 0</pose>
+    <static>true</static>
+    <link name="dog_link">
+      <collision name="dog_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/dog/meshes/dog.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="dog_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://gazebo_worlds_cdt/models/dog/meshes/dog.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link> 
+  </model>
+</sdf>

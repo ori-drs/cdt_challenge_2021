@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>elevation_map_filter_cdt</name>
+  <version>1.0.0</version>
+  <description>Applies a filter chain described by a YAML file to an elevation map.</description>
+  
+  <license>BSD</license>
+  <author email="pfankhauser@anybotics.com">Péter Fankhauser</author>
+  <maintainer email="matias@robots.ox.ac.uk">Matias Mattamala</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+<!--   <build_depend>cmake_clang_tools</build_depend> -->
+  <depend>roscpp</depend>
+  <depend>grid_map_core</depend>
+  <depend>grid_map_ros</depend>
+  <depend>grid_map_filters</depend>
+  <depend>grid_map_loader</depend>
+  <depend>grid_map_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+</package>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <arg name="joystick"              default="false"/>
+  <arg name="full"                  default="true"/>
+  <arg name="world"                 default="arena_simple"/>
+  <arg name="run_ui"                default="true"/>
+  <arg name="rqt_perspective_path"  default="$(find jackal_runtime_cdt)/config/rqt/cdt_challenge.perspective"/>
+
+  <!-- World (mesh) parameters -->
+  <rosparam file="$(find jackal_runtime_cdt)/config/rviz/world.yaml" subst_value="true"/>
+  
+  <!-- Simulation -->
+  <include file="$(find jackal_runtime_cdt)/launch/gazebo_$(arg world).launch"/>  
+
+  <!-- Basic stack -->
+  <include file="$(find jackal_runtime_cdt)/launch/basic_stack.launch">
+    <arg name="joystick" value="false"/>
+  </include>
+
+  <!-- Rviz -->
+  <include file="$(find jackal_runtime_cdt)/launch/view_jackal.launch"/>
+
+  <!-- RQT/User Interface -->
+  <group if="$(arg run_ui)">
+    <node name="cdt_gui"
+      pkg="rqt_gui"
+      type="rqt_gui"
+      args="--force-discover --perspective-file $(arg rqt_perspective_path)"
+      output="screen"
+      respawn="true"/>
+  </group>
+  
+  <!-- Top panel -->
+  <!-- <node pkg="cdt_rqt" type="cdt_rqt" name="cdt_control_panel"/> -->
+
+  <!-- Visualizations -->
+  <include file="$(find cdt_visualizations)/launch/visualizations.launch">
+    <arg name="world" value="$(arg world)"/>
+  </include>
+
+  <!-- Object detector -->
+  <include if="$(arg full)" file="$(find object_detector_cdt)/launch/object_detector.launch"/>
+
+  <!-- World Modelling -->
+  <include if="$(arg full)" file="$(find world_modelling_cdt)/launch/world_modelling.launch"/>
+
+  <!-- World explorer -->
+  <include if="$(arg full)" file="$(find world_explorer_cdt)/launch/world_explorer.launch"/>
+
+
+</launch>

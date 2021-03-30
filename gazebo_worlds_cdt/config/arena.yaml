@@ -1,0 +1,45 @@
+
+/mesh_arena/enabled    :  true
+/mesh_arena/px         :     8
+/mesh_arena/py         :     0
+/mesh_arena/pz         :     0
+/mesh_arena/ow         :     1
+/mesh_arena/ox         :     0
+/mesh_arena/oy         :     0
+/mesh_arena/oz         :     0
+  
+/mesh_barrel/enabled   :  true
+/mesh_barrel/px        :     2 
+/mesh_barrel/py        :    -5.5
+/mesh_barrel/pz        :     0
+/mesh_barrel/ow        :     1
+/mesh_barrel/ox        :     0
+/mesh_barrel/oy        :     0
+/mesh_barrel/oz        :     0
+
+/mesh_barrow/enabled   :  true
+/mesh_barrow/px        :     7
+/mesh_barrow/py        :     7
+/mesh_barrow/pz        :     0
+/mesh_barrow/ow        :     1
+/mesh_barrow/ox        :     0
+/mesh_barrow/oy        :     0
+/mesh_barrow/oz        :     0
+
+/mesh_computer/enabled :  true
+/mesh_computer/px      :    -7.2
+/mesh_computer/py      :    -7.5
+/mesh_computer/pz      :     0.3
+/mesh_computer/ow      :     1
+/mesh_computer/ox      :     0
+/mesh_computer/oy      :     0
+/mesh_computer/oz      :     0
+
+/mesh_dog/enabled      :  true
+/mesh_dog/px           :    -2
+/mesh_dog/py           :     6
+/mesh_dog/pz           :     0
+/mesh_dog/ow           :     1
+/mesh_dog/ox           :     0
+/mesh_dog/oy           :     0
+/mesh_dog/oz           :     0
