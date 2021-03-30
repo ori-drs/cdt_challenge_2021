@@ -9,7 +9,7 @@ ObjectDetector::ObjectDetector(ros::NodeHandle &nh)
     // Setup subscriber
     image_transport::ImageTransport it(nh);
     image_sub_ = it.subscribe(input_image_topic_, 1, &ObjectDetector::imageCallback, this);
-
+    lidar_sub_ = nh.subscribe(input_lidar_topic_,10, &ObjectDetector::lidarCallback, this);
     // Setup publisher
     objects_pub_ = nh.advertise<cdt_msgs::ObjectList>(output_objects_topic_, 10);
 
@@ -53,9 +53,57 @@ void ObjectDetector::readParameters(ros::NodeHandle &nh)
         exit(-1);
     }   
 
+    if (!nh.getParam("input_lidar_topic", input_lidar_topic_))
+    {
+        ROS_ERROR("Could not read parameter `input_lidar_topic`.");
+        exit(-1);
+    }
+
+    if (!nh.getParam("lidar_scans_kept", nb_scans_kept_))
+    {
+        ROS_ERROR("Could not read parameter `lidar_scans_kept`.");
+        exit(-1);
+    }   
+
+
     // output topic is optional. It will use '/detected_objects' by default
     nh.param("output_objects_topic", output_objects_topic_, std::string("/detected_objects"));
 }
+
+bool ObjectDetector::findClosestLidarScan(const ros::Time &time_query, sensor_msgs::PointCloud2 &point_cloud)
+{
+    double smallest_time_diff = 1000;
+    double curr_time_diff;
+    unsigned best_elem_idx = 0;
+    for (unsigned i=0; i<recent_lidar_scans_.size(); i++){
+    // for (auto it = recent_lidar_scans_.begin(); it != recent_lidar_scans_.end(); ++it) {
+        curr_time_diff = abs((time_query - recent_lidar_scans_[i].header.stamp).toSec());
+        if (curr_time_diff < smallest_time_diff)
+        {
+            best_elem_idx = i;
+            smallest_time_diff = curr_time_diff;
+        }
+        else
+        {
+            break;
+        }
+    }
+    point_cloud = recent_lidar_scans_[best_elem_idx];
+    recent_lidar_scans_.erase(recent_lidar_scans_.begin()+best_elem_idx,recent_lidar_scans_.end());
+}
+
+void ObjectDetector::lidarCallback(const sensor_msgs::PointCloud2 in_msg)
+{
+    recent_lidar_scans_.insert(recent_lidar_scans_.begin(),in_msg);
+    if (recent_lidar_scans_.size() > nb_scans_kept_){
+        recent_lidar_scans_.pop_back();
+    }
+    // ROS_INFO("Adding to LIDAR queue");
+    // ROS_INFO("Queue size %d", recent_lidar_scans_.size());
+    // ROS_INFO("First element timestamp %f", recent_lidar_scans_[0].header.stamp.toSec());
+    // ROS_INFO("Last element timestamp %f", recent_lidar_scans_[recent_lidar_scans_.size()-1].header.stamp.toSec());
+}
+
 
 void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
 {

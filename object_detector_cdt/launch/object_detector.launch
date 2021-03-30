@@ -6,6 +6,9 @@
   <arg name="output_objects_topic"  default="/detected_objects"/>
   <arg name="input_base_frame"      default="base_link"/>
   <arg name="input_fixed_frame"     default="odom"/>
+  <arg name="input_lidar_topic"     default="/os_cloud_node/points"/>
+  <arg name="lidar_scans_kept"      default="20"/>
+
 
   <!-- Launch object detector -->
   <node pkg="object_detector_cdt" type="object_detector_cdt_node" name="object_detector" output="screen">
@@ -13,6 +16,8 @@
     <param name="output_objects_topic"   value="$(arg output_objects_topic)"/>
     <param name="input_base_frame"       value="$(arg input_base_frame)"/>
     <param name="input_fixed_frame"      value="$(arg input_fixed_frame)"/>
+    <param name="input_lidar_topic"      value="$(arg input_lidar_topic)"/>
+    <param name="lidar_scans_kept"       value="$(arg lidar_scans_kept)"/>
   </node>
 
 </launch>

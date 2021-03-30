@@ -13,6 +13,7 @@
 #include <sensor_msgs/Image.h>
 #include <cdt_msgs/ObjectList.h>
 #include <cdt_msgs/Object.h>
+#include <sensor_msgs/PointCloud2.h>
 
 // Eigen library
 #include <Eigen/Dense>
@@ -30,6 +31,11 @@ class ObjectDetector
     // Image subscriber
     image_transport::Subscriber image_sub_;
 
+    // Lidar tracking
+    ros::Subscriber lidar_sub_;
+    std::vector<sensor_msgs::PointCloud2> recent_lidar_scans_;
+    int nb_scans_kept_;
+
     // Detected objects publisher
     ros::Publisher objects_pub_;
 
@@ -41,6 +47,7 @@ class ObjectDetector
 
     // Input topics
     std::string input_image_topic_;
+    std::string input_lidar_topic_;
     std::string base_frame_;
     std::string fixed_frame_;
 
@@ -70,6 +77,12 @@ private:
 
     // The callback implements all the actions
     void imageCallback(const sensor_msgs::ImageConstPtr &in_msg);
+
+    // The callback to keep track of Lidar scans
+    void lidarCallback(const sensor_msgs::PointCloud2 in_msg);
+
+    // Finds the closest lidar scan in memory to the time query
+    bool findClosestLidarScan(const ros::Time &time_query, sensor_msgs::PointCloud2 &point_cloud);
 
     // Converts message to opencv image
     void convertMessageToImage(const sensor_msgs::ImageConstPtr &in_msg, cv::Mat& out_image, ros::Time& out_timestamp);

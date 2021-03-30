@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   tf
   cdt_msgs
+  sensor_msgs
 )
 
 
@@ -31,6 +32,7 @@ catkin_package(
                  tf2_ros
                  tf
                  cdt_msgs
+                 sensor_msgs
   DEPENDS OpenCV
 )
 
