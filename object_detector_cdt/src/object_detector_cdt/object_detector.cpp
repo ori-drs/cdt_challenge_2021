@@ -74,8 +74,8 @@ void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
     // Recognize object
     // Dog
     // TODO: This only publishes the first time we detect the dog
-    if(!wasObjectDetected("dog")) // TODO: implement a better check
-    {
+    // if(!wasObjectDetected("dog")) // TODO: implement a better check
+    // {
         cdt_msgs::Object new_object;
         bool valid_object = recognizeDog(image, timestamp, x, y, theta, new_object);
 
@@ -84,7 +84,7 @@ void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
         {
             detected_objects_.objects.push_back(new_object);
         }
-    }
+    // }
     // TODO: Add other objects here
 
 
@@ -105,24 +105,31 @@ cv::Mat ObjectDetector::applyColourFilter(const cv::Mat &in_image_bgr, const Col
 {
     assert(in_image_bgr.type() == CV_8UC3);
 
+    cv::Mat in_image_hsv;
+    cv::cvtColor(in_image_bgr, in_image_hsv, CV_BGR2HSV);
+
     // Here you should apply some binary threhsolds on the image to detect the colors
     // The output should be a binary mask indicating where the object of a given color is located
     cv::Mat mask;
     if (colour == Colour::RED) {
-        inRange(in_image_bgr, cv::Scalar(  0,  0,  0), cv::Scalar( 255, 255, 255), mask);
+        inRange(in_image_hsv, cv::Scalar(  0,  5,  0), cv::Scalar( 1, 255, 255), mask);
     } else if (colour == Colour::YELLOW) {
-        inRange(in_image_bgr, cv::Scalar(  0,  0,  0), cv::Scalar( 255, 255, 255), mask);
+        inRange(in_image_hsv, cv::Scalar(  0,  0,  0), cv::Scalar( 255, 255, 255), mask);
     } else if (colour == Colour::GREEN) {
-        inRange(in_image_bgr, cv::Scalar(  0,  0,  0), cv::Scalar( 255, 255, 255), mask);
+        inRange(in_image_hsv, cv::Scalar(  0,  0,  0), cv::Scalar( 255, 255, 255), mask);
     } else if (colour == Colour::BLUE) {
-        inRange(in_image_bgr, cv::Scalar(  0,  0,  0), cv::Scalar( 255, 255, 255), mask);
+        inRange(in_image_hsv, cv::Scalar(  0,  0,  0), cv::Scalar( 255, 255, 255), mask);
     } else {
         // Report color not implemented
         ROS_ERROR_STREAM("[ObjectDetector::colourFilter] colour (" << colour << "  not implemented!");
     }
 
+    cv::Mat eroded_mask, dilated_mask;
+    cv::erode(mask, eroded_mask, cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3)));
+    cv::dilate(eroded_mask, dilated_mask, cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3)));
+
     // We return the mask, that will be used later
-    return mask;
+    return dilated_mask;
 }
 
 cv::Mat ObjectDetector::applyBoundingBox(const cv::Mat1b &in_mask, double &x, double &y, double &width, double &height) {
@@ -131,13 +138,51 @@ cv::Mat ObjectDetector::applyBoundingBox(const cv::Mat1b &in_mask, double &x, do
 
     // TODO: Compute the bounding box using the mask
     // You need to return the center of the object in image coordinates, as well as a bounding box indicating its height and width (in pixels)
-    x = 0;
-    y = 0;
-    width = 30;
-    height = 50;
+    int top_left_x, top_left_y, bottom_right_x, bottom_right_y;
+    top_left_x = in_mask.rows;
+    top_left_y = in_mask.cols;
+    bottom_right_x = 0;
+    bottom_right_y = 0;
+
+    for (int i = 0; i < in_mask.rows; ++i)
+    {
+        for (int j = 0; j < in_mask.cols; ++j)
+        {
+            int value = in_mask.at<uchar>(i, j);
+            if (value == 255)
+            {
+                if (j < top_left_x) {
+                    top_left_x = j;
+                }
+                if (j > bottom_right_x) {
+                    bottom_right_x = j;
+                }
+
+                if (i < top_left_y) {
+                    top_left_y = i;
+                }
+                if (i > bottom_right_y) {
+                    bottom_right_y = i;
+                }
+            }
+        }
+    }
+
+    x = (top_left_x + bottom_right_x) / 2;
+    y = (top_left_y + bottom_right_y) / 2;
+    width = bottom_right_x - top_left_x;
+    height = bottom_right_y - top_left_y;
+
+    // debugging bbox
+    cv::Point top_left(top_left_x, top_left_y);
+    cv::Point bottom_right(bottom_right_x, bottom_right_y); 
+    cv::rectangle(in_mask, top_left, bottom_right, cv::Scalar(255, 255, 255));
+    cv::imwrite("/home/cdt2021/bbox.png", in_mask);
 
     return drawing;
 }
+
+// cv::imwrite(img, path)
 
 bool ObjectDetector::recognizeDog(const cv::Mat &in_image, const ros::Time &in_timestamp, 
                                   const double& robot_x, const double& robot_y, const double& robot_theta,
@@ -154,6 +199,9 @@ bool ObjectDetector::recognizeDog(const cv::Mat &in_image, const ros::Time &in_t
     cv::Mat in_image_bounding_box = applyBoundingBox(in_image_red, dog_image_center_x, dog_image_center_y, dog_image_width, dog_image_height);
 
     // Note: Almost everything below should be kept as it is
+    if (dog_image_width < MIN_BBOX_WIDTH || dog_image_height < MIN_BBOX_HEIGHT) {
+        return false;
+    }
 
     // We convert the image position in pixels into "real" coordinates in the camera frame
     // We use the intrinsics to compute the depth
@@ -187,7 +235,8 @@ bool ObjectDetector::recognizeDog(const cv::Mat &in_image, const ros::Time &in_t
     out_new_object.position.y = robot_y +  sin(robot_theta)*dog_position_base_x + cos(robot_theta) * dog_position_base_y;
     out_new_object.position.z = 0.0     + camera_extrinsic_z_ + -dog_position_camera_y;
 
-    return std::isfinite(depth);
+    // return std::isfinite(depth);
+    return depth < 1;
 }
 
 // TODO: Implement similar methods for other objects

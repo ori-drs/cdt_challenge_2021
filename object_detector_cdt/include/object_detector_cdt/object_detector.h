@@ -17,9 +17,16 @@
 // Eigen library
 #include <Eigen/Dense>
 
+#include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
 #include <opencv2/core.hpp>
+#include <opencv2/core/types.hpp>
 #include <opencv2/highgui.hpp>
 #include <iostream>
+
+#define MIN_BBOX_WIDTH 50
+#define MIN_BBOX_HEIGHT 50
+#define MIN_OBJECT_DEPTH 1
 
 // Colours
 enum Colour { RED=0, YELLOW=0, GREEN=1,  BLUE=2 };
