@@ -1,6 +1,5 @@
 #include <object_detector_cdt/object_detector.h>
 
-
 ObjectDetector::ObjectDetector(ros::NodeHandle &nh)
 {
     // Read parameters
@@ -136,6 +135,37 @@ cv::Mat ObjectDetector::applyBoundingBox(const cv::Mat1b &in_mask, double &x, do
     width = 30;
     height = 50;
 
+    int x_min = 0;
+    int x_max = 0;
+    int y_min = 0;
+    int y_max = 0;
+
+    for(int x = 0; x < in_mask.cols; x++){
+        for(int y = 0; y < in_mask.rows; y++){
+            if (in_mask.at<int>(y, x) == 1) {
+                x_min = std::min(x_max, x);
+                x_max = std::min(x_max, x);
+                y_min = std::min(y_max, y);
+                y_max = std::min(y_max, y);
+            } 
+        }
+    }
+
+    width = x_max - x_min;
+    height = y_max - y_min;
+    x = double(x_min + x_max) / 2;
+    y = double(y_min + y_max) / 2;
+
+    for(int col = x_min; col < x_max; col++){
+        drawing.at<int>(y_min, col) = 1;
+        drawing.at<int>(y_max, col) = 1;
+    }
+    for(int row = y_min; row < y_max; row++){
+        drawing.at<int>(row, x_min) = 1;
+        drawing.at<int>(row, x_max) = 1;
+    }
+
+    cv::imwrite("bounding_box.png", drawing);
     return drawing;
 }
 
