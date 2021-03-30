@@ -3,7 +3,8 @@
   <arg name="joystick" default="false"/>
   
   <!-- Elevation mapping -->
-  <include file="$(find jackal_runtime_cdt)/launch/elevation_mapping_sim.launch"/>
+  <!-- <include file="$(find jackal_runtime_cdt)/launch/elevation_mapping_sim.launch"/> -->
+  <!-- <include file="$(find simple_elevation_mapper)/launch/cdt_2021.launch"/> -->
 
   <!-- Elevation map filter-->
   <include file="$(find elevation_map_filter_cdt)/launch/filter_chain.launch"/>

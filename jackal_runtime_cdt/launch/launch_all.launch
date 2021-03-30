@@ -10,12 +10,7 @@
   <rosparam file="$(find jackal_runtime_cdt)/config/rviz/world.yaml" subst_value="true"/>
   
   <!-- Simulation -->
-  <include file="$(find jackal_runtime_cdt)/launch/gazebo_$(arg world).launch"/>  
-
-  <!-- Basic stack -->
-  <include file="$(find jackal_runtime_cdt)/launch/basic_stack.launch">
-    <arg name="joystick" value="false"/>
-  </include>
+  <include file="$(find jackal_runtime_cdt)/launch/gazebo_$(arg world).launch"/>
 
   <!-- Rviz -->
   <include file="$(find jackal_runtime_cdt)/launch/view_jackal.launch"/>
@@ -36,6 +31,11 @@
   <!-- Visualizations -->
   <include file="$(find cdt_visualizations)/launch/visualizations.launch">
     <arg name="world" value="$(arg world)"/>
+  </include>
+
+    <!-- Basic stack -->
+  <include file="$(find jackal_runtime_cdt)/launch/basic_stack.launch">
+    <arg name="joystick" value="false"/>
   </include>
 
   <!-- Object detector -->

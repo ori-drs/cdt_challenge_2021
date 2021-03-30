@@ -8,7 +8,7 @@
   <arg name="sensor" default="velodyne"/>
 
   <!-- Launch elevation mapping -->
-  <node pkg="elevation_mapping" type="elevation_mapping" name="elevation_mapping_lidar" output="screen">
+  <node pkg="elevation_mapping" type="elevation_mapping" name="elevation_mapping_lidar" output="screen" launch-prefix="gdb -ex run --args">
     <rosparam command="load" file="$(find jackal_runtime_cdt)/config/elevation_mapping/ouster_jackal_sim.yaml"/>
     <rosparam if="$(eval sensor == 'actuated_lidar')"        command="load" file="$(find elevation_mapping)/config/sensor_processors/hokuyo_utm-30lx.yaml"/>
     <rosparam if="$(eval sensor == 'velodyne')"              command="load" file="$(find elevation_mapping)/config/sensor_processors/velodyne_HDL-32E.yaml"/>

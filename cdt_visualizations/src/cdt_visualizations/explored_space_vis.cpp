@@ -61,7 +61,6 @@ void ExploredSpace::readParameters(ros::NodeHandle &nh)
 
 void ExploredSpace::elevationMapCallback(const grid_map_msgs::GridMap &in_grid_map)
 {
-    // ROS_INFO("New elevation map received!");
     // Convert grid map and store in local variable
     grid_map::GridMap grid_map;
     grid_map::GridMapRosConverter::fromMessage(in_grid_map, grid_map);
@@ -69,6 +68,10 @@ void ExploredSpace::elevationMapCallback(const grid_map_msgs::GridMap &in_grid_m
 
     // We also need to save the info (header) since it stores the frame and size
     grid_map_msgs::GridMapInfo grid_map_info = in_grid_map.info;
+
+
+    // ROS_INFO("New elevation map received!");
+    ROS_INFO_STREAM("elevation map: " << grid_map.getLength());
 
     // Save message time
     ros::Time current_time = in_grid_map.info.header.stamp;

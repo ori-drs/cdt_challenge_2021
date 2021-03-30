@@ -13,7 +13,7 @@
     <param name="input_fixed_frame"            value="$(arg input_fixed_frame)"/>
     <param name="input_base_frame"             value="$(arg input_base_frame)"/>
 
-    <param name="elevation_threshold"         value="0.1"/>
+    <param name="elevation_threshold"         value="0.01"/>
     <param name="explored_space_length"       value="16.0"/>
     <param name="explored_space_resolution"   value="0.25"/>
 
