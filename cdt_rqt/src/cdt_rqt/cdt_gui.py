@@ -78,13 +78,13 @@ class CdtGui(Plugin):
         self._widget.labelDog.setEnabled(False)
         self._widget.labelComputer.setEnabled(False)
         self._widget.labelBarrel.setEnabled(False)
-        self._widget.labelBarrow.setEnabled(False)
+        self._widget.labelBurrow.setEnabled(False)
         self._widget.labelDuck.setEnabled(False)
 
         self._widget.labelDogPosition.setText("Not found")
         self._widget.labelComputerPosition.setText("Not found")
         self._widget.labelBarrelPosition.setText("Not found")
-        self._widget.labelBarrowPosition.setText("Not found")
+        self._widget.labelBurrowPosition.setText("Not found")
         self._widget.labelDuckPosition.setText("Not found")
 
         # Setup subscriberstr_system_status
@@ -253,9 +253,9 @@ class CdtGui(Plugin):
           self._widget.labelBarrelPosition.setText(label)
 
         if obj.id == 'barrow':
-          self._widget.labelBarrow.setEnabled(True)
+          self._widget.labelBurrow.setEnabled(True)
           label = 'x: %.1f, y: %.1f' %(obj.position.x, obj.position.y)
-          self._widget.labelBarrowPosition.setText(label)
+          self._widget.labelBurrowPosition.setText(label)
 
         if obj.id == 'duck':
           self._widget.labelDuck.setEnabled(True)
