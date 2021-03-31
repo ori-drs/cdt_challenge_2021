@@ -64,6 +64,10 @@ class WorldModelling
     bool first_node_;
     bool first_frontier_;
 
+    // Other variables
+    float trav_check_distance_;
+    float trav_gradient_limit_;
+
 public:
     // Constructor
     WorldModelling(ros::NodeHandle &nh);
@@ -94,4 +98,6 @@ private:
     // Utils
     void getRobotPose(float &x, float &y, float &theta);
     float distanceBetweenNodes(cdt_msgs::GraphNode n1, cdt_msgs::GraphNode n2);
+    float computeGradientMagnitude(float x, float y);
+
 };

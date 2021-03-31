@@ -53,6 +53,10 @@ void WorldModelling::readParameters(ros::NodeHandle &nh)
     nh.param("max_distance_to_search_frontiers", max_distance_to_search_frontiers_, 3.f);
     nh.param("distance_to_delete_frontier", distance_to_delete_frontier_, 2.5f);
     nh.param("frontiers_search_angle_resolution", frontiers_search_angle_resolution_, 30.f);
+
+    nh.param("trav_check_distance", trav_check_distance_, 30.f);
+    nh.param("trav_gradient_limit", trav_gradient_limit_, 30.f);
+
 }
 
 void WorldModelling::elevationMapCallback(const grid_map_msgs::GridMap &in_grid_map)
@@ -198,6 +202,7 @@ void WorldModelling::computeTraversability(const grid_map::GridMap &grid_map)
             if (traversability_.at("elevation", *iterator) < elevation_threshold_) {
                 trav_value = 1.0;
             }
+
             traversability_.at("traversability", *iterator) = trav_value;
         }
     }
