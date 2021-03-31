@@ -144,7 +144,7 @@ cv::Mat ObjectDetector::applyColourFilter(const cv::Mat &in_image_bgr, const Col
     // Here you should apply some binary threhsolds on the image to detect the colors
     // The output should be a binary mask indicating where the object of a given color is located
     cv::Mat mask;
-    cv::imwrite("hsv.png", in_image_hsv);
+    // cv::imwrite("hsv.png", in_image_hsv);
     if (colour == Colour::RED) {
         cv::Mat mask2;
         inRange(in_image_hsv, cv::Scalar(  0./360.*255,  30./100.*255,  17./100.*255), cv::Scalar( 36./360.*255, 100./100.*255, 100./100.*255), mask);
@@ -194,7 +194,7 @@ cv::Mat ObjectDetector::applyColourFilter(const cv::Mat &in_image_bgr, const Col
     double thresh = double(in_image_bgr.cols * in_image_bgr.rows) * limit;
     // We return the mask, that will be used later
     if (max_label_area > thresh){
-        cv::imwrite("pre-filt-mask.png", mask);
+        // cv::imwrite("pre-filt-mask.png", mask);
         return max_label_mask;
     }
     return cv::Mat::zeros(mask.rows, mask.cols, mask.type());
