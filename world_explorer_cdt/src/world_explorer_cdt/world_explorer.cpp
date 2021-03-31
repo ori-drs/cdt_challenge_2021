@@ -176,12 +176,21 @@ void WorldExplorer::plan()
 
         // Local Planner (RRT)
         // TODO Plan a route to the most suitable frontier
-        local_planner_.planPath(robot_x, robot_y, robot_theta, pose_goal, route_);
+        int goal_ind = 0;
+        bool success = local_planner_.planPath(robot_x, robot_y, robot_theta, pose_goal, route_);
+        while (!local_planner_.planPath(robot_x, robot_y, robot_theta, pose_goal, route_)){
+            goal_ind++;
+            if (goal_ind >= goals.size()) {
+                ROS_INFO("Can't find a suitable frontier with a path");
+                break;
+            }
+            Eigen::Vector2d pose_goal = goals.at(goal_ind);
+        }
 
         // some more reasoning to be done here....
 
         // TODO Graph Planner
-        graph_planner_.planPath(robot_x, robot_y, robot_theta, pose_goal, route_);
+        //graph_planner_.planPath(robot_x, robot_y, robot_theta, pose_goal, route_);
 
         // If we have route targets (frontiers), work them off and send to position controller
         if(route_.size() > 0)
@@ -218,7 +227,42 @@ void WorldExplorer::plan()
     else
     {
         ROS_INFO("No frontiers to go to.");
-        // TODO: Implement something to indicate it ended and optionally go to the home position
+        // TODONE: Implement something to indicate it ended and optionally go to the home position
+        double robot_x, robot_y, robot_theta;
+        getRobotPose2D(robot_x, robot_y, robot_theta);
+        auto home_pose = exploration_graph_.nodes[0].pose;
+        Eigen::Vector2d pose_goal = Eigen::Vector2d(home_pose.position.x, home_pose.position.y);
+        graph_planner_.planPath(robot_x, robot_y, robot_theta, pose_goal, route_);
+        if(route_.size() > 0)
+        {
+            // Create goal message
+            geometry_msgs::PoseStamped target;
+            target.pose.position.x = route_.begin()->x();
+            target.pose.position.y = route_.begin()->y();
+            target.pose.position.z = 0.25;
+            target.header.frame_id = goal_frame_;
+            goal_pub_.publish(target);
+            ROS_DEBUG_STREAM("Sending target " << route_.begin()->transpose());
+
+            // Visualize route (plan)
+            nav_msgs::Path plan;
+            plan.header.stamp = ros::Time::now(); // Should fix this
+            plan.header.frame_id = goal_frame_;
+            geometry_msgs::PoseStamped pose;
+            pose.pose.position.x = robot_x;
+            pose.pose.position.y = robot_y;
+            pose.pose.position.z = 0.25; // This is to improve the visualization only
+            plan.poses.push_back(pose);
+
+            for(auto carrot : route_){
+                geometry_msgs::PoseStamped pose;
+                pose.pose.position.x = carrot.x();
+                pose.pose.position.y = carrot.y();
+                pose.pose.position.z = 0.25; // This is to improve the visualization only
+                plan.poses.push_back(pose);
+            }
+            plan_pub_.publish(plan);
+        } 
     }
 }
 

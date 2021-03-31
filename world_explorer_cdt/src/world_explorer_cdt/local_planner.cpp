@@ -223,7 +223,9 @@ bool LocalPlanner::isPoseValid(const Eigen::Isometry3d& pose)
         {
             return false;
         }
-        
+        if (traversability_.atPosition(traversability_layer_, query_point) < 0) {
+            return false;
+        }
 
         // TODO check that the corner points are valid (to make sure the robot itself is in a valid pose)
         // return false if not valid...
