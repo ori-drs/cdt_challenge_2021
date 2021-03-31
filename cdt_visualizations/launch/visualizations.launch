@@ -6,6 +6,8 @@
   <arg name="input_fixed_frame" default="odom"/>
   <arg name="input_base_frame"  default="base_link"/>
   <arg name="world"             default="arena_simple"/>
+  <arg name="team_name"         default="please enter your team name in cdt_visualizations/launch/visualizations.launch"/>
+  <arg name="team_member_names" default="please enter your team member names in cdt_visualizations/launch/visualizations.launch"/>
 
   <!-- Launch explored space visualization -->
   <node pkg="cdt_visualizations" type="explored_space_vis_node" name="explored_space_vis" output="screen">
@@ -26,5 +28,11 @@
   <node pkg="cdt_visualizations" type="publish_visualizations.py" name="cdt_visualizations">
     <param name="world"  value="$(arg world)"/>
   </node>
+
+  <!-- Generate name topic for GUI -->
+  <node pkg="cdt_visualizations" type="publish_team_names.py" name="cdt_team_name">
+    <param name="team_name"  value="$(arg team_name)"/>
+    <param name="team_member_names"  value="$(arg team_member_names)"/>
+  </node>  
 
 </launch>

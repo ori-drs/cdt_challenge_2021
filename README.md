@@ -2,19 +2,21 @@
 CDT Challenge 2021: Autonomous exploration with wheeled robots
 
 **Contents**
+- [cdt_challenge_2021](#cdt_challenge_2021)
 - [Preliminaries](#preliminaries)
-  - [Virtual Machine setup](#Virtual-Machine-setup)
-  - [SSH keys and GitHub](#SSH-keys-and-GitHub)
-  - [Git installation](#Git-installation)
-  - [Clone this repository](#Clone-this-repository)
-- [Basic software installation](#Basic-software-installation)
-  - [Normal installation](#Normal-installation)
-  - [Step-by-step](#Step-by-step)
-  - [Updating the software](#Updating-the-software)
-    - [Updating this package](#Updating-this-package)
-    - [Updating the system packages](#Updating-the-system-packages)
-    - [Updating .bashrc](#Updating-.bashrc)
-- [Running the code](#Running-the-code)
+  - [Virtual machine setup](#virtual-machine-setup)
+  - [SSH keys and GitHub](#ssh-keys-and-github)
+  - [Git installation](#git-installation)
+  - [Clone this repository](#clone-this-repository)
+- [Basic software installation](#basic-software-installation)
+  - [Normal installation](#normal-installation)
+  - [Step-by-step](#step-by-step)
+  - [Updating the software](#updating-the-software)
+    - [Updating this package](#updating-this-package)
+    - [Updating the system packages](#updating-the-system-packages)
+    - [Updating .bashrc](#updating-bashrc)
+    - [Fixing elevation mapping](#fixing-elevation-mapping)
+- [Running the code](#running-the-code)
 
 # Preliminaries
 ## Virtual machine setup
@@ -107,6 +109,37 @@ cd ~/git
 ./cdt_challenge_2021/cdt_superbuild/build_scripts/setup-7-edit-bashrc.sh
 source ~/.bashrc
 ```
+
+### Fixing elevation mapping
+Crashes in the elevation were due to issues in the lidar plugins used in Gazebo. This can be fixed by compiling the lidar plugin:
+
+Clone the `velodyne_simulator` package into your `git` folder
+
+```sh
+git clone --branch 1.0.12 https://bitbucket.org/DataspeedInc/velodyne_simulator.git
+```
+
+Then go to your `src` folder in your `catkin_ws` folder and symlink it:
+
+```sh
+roscd $CATKIN_WORKSPACE
+cd src
+ln -s ../../git/velodyne_simulator .
+```
+
+Build the code:
+```sh
+catkin build velodyne_gazebo_plugins
+```
+
+Add the following line to your `.bashrc` file:
+
+```sh
+export GAZEBO_PLUGIN_PATH=$CATKIN_WORKSPACE/devel/lib
+```
+
+Source `.bashrc` and try to run the `launch_all.launch` again.
+
 
 # Running the code
 Before running everything, source the `setup.bash` file:
