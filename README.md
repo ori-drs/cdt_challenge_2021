@@ -113,16 +113,29 @@ source ~/.bashrc
 ### Fixing elevation mapping
 Crashes in the elevation were due to issues in the lidar plugins used in Gazebo. This can be fixed by compiling the lidar plugin:
 
-Clone the `velodyne_simulation` package:
+Clone the `velodyne_simulator` package into your `git` folder
 
 ```sh
 git clone --branch 1.0.12 https://bitbucket.org/DataspeedInc/velodyne_simulator.git
 ```
 
+Then go to your `src` folder in your `catkin_ws` folder and symlink it:
+
+```sh
+roscd $CATKIN_WORKSPACE
+cd src
+ln -s ../../git/velodyne_simulator .
+```
+
+Build the code:
+```sh
+catkin build velodyne_gazebo_plugins
+```
+
 Add the following line to your `.bashrc` file:
 
 ```sh
-export GAZEBO_PLUGIN_PATH=/$CATKIN_WORKSPACE/devel/lib
+export GAZEBO_PLUGIN_PATH=$CATKIN_WORKSPACE/devel/lib
 ```
 
 Source `.bashrc` and try to run the `launch_all.launch` again.
