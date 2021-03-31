@@ -8,7 +8,7 @@ import random
 from std_srvs.srv import EmptyRequest, Empty, EmptyResponse
 from visualization_msgs.msg import MarkerArray, Marker
 from geometry_msgs.msg import PoseStamped
-from std_msgs.msg import Int64
+from std_msgs.msg import Int64, String
 
 # CDT messages
 from cdt_msgs.msg import Graph, Frontiers, Object, ObjectList
@@ -92,6 +92,8 @@ class CdtGui(Plugin):
         self.sub_manual_goal  = rospy.Subscriber("/move_base_simple/goal", PoseStamped, self.callback_manual_goal)
         self.sub_manual_goal2 = rospy.Subscriber("/goal", PoseStamped, self.callback_manual_goal)
         self.sub_exp_space    = rospy.Subscriber("/explored_space_percentage", Int64, self.callback_explored_space_percentage)
+        self.sub_team_name    = rospy.Subscriber("/team_name", String, self.callback_team_name)
+        self.sub_team_names   = rospy.Subscriber("/team_member_names", String, self.callback_team_member_names)
 
         self.mutex_objects = Lock()
         self.mutex_world = Lock()
@@ -173,7 +175,12 @@ class CdtGui(Plugin):
         self.world_explored_percentage = msg.data
         self.mutex_world.release()
         # self.update_world_coverage()
-        
+
+    def callback_team_name(self, msg):
+        self._widget.labelTeam.setText(str(msg.data))
+
+    def callback_team_member_names(self, msg):
+        self._widget.labelNames.setText(str(msg.data))        
  
     # Slots (callbacks when an event is triggered)
     def do_service_call(self, service_name):

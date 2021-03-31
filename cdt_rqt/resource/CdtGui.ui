@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>1500</width>
     <height>100</height>
    </rect>
   </property>
@@ -152,7 +152,7 @@ color: rgb(255, 255, 255);</string>
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="../../../../../git/cdt_challenge_2021_private/cdt_rqt/resource/resources.qrc">:/barrow.jpg</pixmap>
+           <pixmap resource="resources.qrc">:/barrow.jpg</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -203,7 +203,7 @@ color: rgb(255, 255, 255);</string>
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="../../../../../git/cdt_challenge_2021_private/cdt_rqt/resource/resources.qrc">:/barrel.jpg</pixmap>
+           <pixmap resource="resources.qrc">:/barrel.jpg</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -257,7 +257,7 @@ color: rgb(255, 255, 255);</string>
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="../../../../../git/cdt_challenge_2021_private/cdt_rqt/resource/resources.qrc">:/clifford.jpg</pixmap>
+           <pixmap resource="resources.qrc">:/clifford.jpg</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -337,7 +337,7 @@ color: rgb(255, 255, 255);</string>
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="../../../../../git/cdt_challenge_2021_private/cdt_rqt/resource/resources.qrc">:/computer.jpg</pixmap>
+           <pixmap resource="resources.qrc">:/computer.jpg</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -388,7 +388,7 @@ color: rgb(255, 255, 255);</string>
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="../../../../../git/cdt_challenge_2021_private/cdt_rqt/resource/resources.qrc">:/duck.jpg</pixmap>
+           <pixmap resource="resources.qrc">:/duck.jpg</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -535,6 +535,60 @@ color: rgb(255, 255, 255);</string>
     </widget>
    </item>
    <item>
+    <widget class="Line" name="line_4">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget_3" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>300</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>400</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QLabel" name="labelTeam">
+        <property name="font">
+         <font>
+          <pointsize>20</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>DRS to the moon!</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelNames">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Dellaert, Khatib, Thrun, Schaal</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer name="horizontalSpacer_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -550,6 +604,7 @@ color: rgb(255, 255, 255);</string>
   </layout>
  </widget>
  <resources>
+  <include location="resources.qrc"/>
   <include location="../../../../../git/cdt_challenge_2021_private/cdt_rqt/resource/resources.qrc"/>
  </resources>
  <connections/>
