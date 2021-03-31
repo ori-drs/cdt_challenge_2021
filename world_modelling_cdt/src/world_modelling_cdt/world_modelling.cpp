@@ -374,14 +374,14 @@ void WorldModelling::updateFrontiers(const float &x, const float &y, const float
         }
 
         // Check the line between the current location and the frontier
-        float unit_x = (frontier_x - x)/ distance_to_frontier;
-        float unit_y = (frontier_y - y)/ distance_to_frontier;
-        int num_steps = distance_to_frontier / step + 1;
+        float unit_x = (frontier_x - x)/distance_to_frontier;
+        float unit_y = (frontier_y - y)/distance_to_frontier;
+        int num_steps = (distance_to_frontier / step) + 1;
         bool is_traversable = true; 
         
         for (int i = 1; i < num_steps; i++) { 
             grid_map::Position pos(x + unit_x*step*i, y + unit_y*step*i);
-            if (!traversability_.atPosition("traversability", pos) < 0) {
+            if (traversability_.atPosition("traversability", pos) < 0) {
                 is_traversable = false;
                 break;
             }
