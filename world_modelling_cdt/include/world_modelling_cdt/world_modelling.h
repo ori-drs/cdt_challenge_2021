@@ -1,8 +1,11 @@
 #pragma once
 
+#define _USE_MATH_DEFINES
+
 #include <string>
 #include <Eigen/Dense>
 #include <stdexcept>
+#include <math.h>
 
 // ROS stuff
 #include <ros/ros.h>
@@ -42,6 +45,7 @@ class WorldModelling
     float elevation_threshold_;
     float max_distance_to_search_frontiers_;
     float distance_to_delete_frontier_;
+    float max_distance_to_delete_frontier_;
     float frontiers_search_angle_resolution_;
 
     // output topics
