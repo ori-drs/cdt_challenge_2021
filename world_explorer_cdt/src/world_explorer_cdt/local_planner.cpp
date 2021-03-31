@@ -38,7 +38,7 @@ std::vector<Eigen::Vector2d> LocalPlanner::searchFrontiers(cdt_msgs::Frontiers f
 
     std::vector<FrontierCost> frontier_costs; // frontier, heading
 
-    // TODO compute the cost terms, might think of other contributions than just x,y location...
+    // TODO compute the things that might influence costs, might think of other contributions than just x,y location...
     for(auto frontier : frontiers.frontiers)
     {
         // Create new frontier struct
@@ -56,7 +56,8 @@ std::vector<Eigen::Vector2d> LocalPlanner::searchFrontiers(cdt_msgs::Frontiers f
     for(auto& frontier : frontier_costs){
         // We need to create a cost, lower cost is better                                 
  
-        frontier.cost_ = 1;
+        // start out just using the closest frontier (no need to take the square root because the quadratic function is monotonically increasing)
+        frontier.cost_ = std::hypot(robot_x - frontier.x_, robot_y - frontier.y_);
     }
 
     // We want to sort the frontiers using the costs previously computed
@@ -210,12 +211,24 @@ bool LocalPlanner::isPoseValid(const Eigen::Isometry3d& pose)
         corner_points.push_back( pt.head<2>() );
     }
 
+    Eigen::Vector2d current_point;
+    float traversable;
     // check the validity of the edge points themselfs
     for (int j = 0; j < corner_points.size(); ++j)
     {
-        // TODO check that the corner points are valid (to make sure the robot itself is in a valid pose)
+        // check that the corner points of the robot are valid (to make sure the robot itself is in a valid pose)
         // return false if not valid...
-        continue;
+        current_point = corner_points[j];
+
+        if(traversability_.isInside(current_point) == 0){
+            return false;
+        }
+
+        traversable = traversability_.atPosition("traversability", current_point);
+
+        if(traversable < 0.0){
+            return false;
+        }
     }
 
     return true;

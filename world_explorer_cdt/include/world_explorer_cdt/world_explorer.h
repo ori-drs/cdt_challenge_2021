@@ -72,11 +72,17 @@ class WorldExplorer
     double planning_time_ = 0.5;
     double path_execute_limit_ = 100.0;
 
+    double max_local_planner_distance = 20.0; //TODO adjust
+
+
     bool start_exploring_ = false;
     bool received_frontiers_ = false;
     bool received_trav_map_ = false;
     bool position_controller_ready_ = false;
     bool execute_full_path_ = false;
+
+    // starting pose
+    geometry_msgs::Pose starting_pose_;
 
     // Planers
     LocalPlanner local_planner_;
