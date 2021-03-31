@@ -87,7 +87,7 @@ private:
     void readParameters(ros::NodeHandle &nh);
 
     //Determine object position
-    void getObjectPosition(const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x, double &y, double &z);
+    bool getObjectPosition(const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x, double &y, double &z);
 
 
     // The callback implements all the actions
@@ -108,7 +108,12 @@ private:
     // Detects the specified colour within the input image (BGR)
     cv::Mat applyBoundingBox(const cv::Mat1b &in_mask, double &x, double &y, double &width, double &height);
 
+
     // Implements the procedures to recognize objects
+
+    bool recognizeObject(const cv::Mat &in_image, const Colour &colour, const std_msgs::Header &in_header, 
+                                  double& x_map, double& y_map, double& z_map);
+                                  
     bool recognizeDog(const cv::Mat &in_image, const ros::Time &in_timestamp, 
                       const double& robot_x, const double& robot_y, const double& robot_theta,
                       cdt_msgs::Object &out_new_object);

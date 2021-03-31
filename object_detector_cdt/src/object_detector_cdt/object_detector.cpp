@@ -33,13 +33,13 @@ ObjectDetector::ObjectDetector(ros::NodeHandle &nh)
     angle_margin_ = 2*M_PI/180;
 }
 
-void ObjectDetector::getObjectPosition(const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x_out, double &y_out, double &z_out)
+bool ObjectDetector::getObjectPosition(const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x_out, double &y_out, double &z_out)
 {
     sensor_msgs::PointCloud2 pc2_msg_lidar, pc2_msg_cam;
 
     if (!findClosestLidarScan(imgheader.stamp,pc2_msg_lidar))
     {
-        return;
+        return false;
     }
 
     // Transform point cloud in camera frame
@@ -83,10 +83,30 @@ void ObjectDetector::getObjectPosition(const float &pixelx, const float &pixely,
     if (points.size() > 0)
     {
         pcl::PointXYZ temp_point = points.front();
-        x_out= temp_point.x;
-        y_out= temp_point.y;
-        z_out= temp_point.z;
+        tf::Point pos_cam(temp_point.x,temp_point.y,temp_point.z);
+        tf::Stamped<tf::Point> pos_cam_stamped(pos_cam,imgheader.stamp,"image_frame");
+        tf::Stamped<tf::Point> pos_fixed_stamped;
+               ROS_ERROR("Pixel val tf %f %f", pixelx, pixely);
+ 
+        ROS_ERROR("Before tf %f %f %f", pos_cam_stamped.getX(), pos_cam_stamped.getY(), pos_cam_stamped.getZ());
+
+        tf_listener_.transformPoint(fixed_frame_,pos_cam_stamped,pos_fixed_stamped);
+
+        ROS_ERROR("After tf %f %f %f", pos_fixed_stamped.getX(), pos_fixed_stamped.getY(), pos_fixed_stamped.getZ());
+
+
+        x_out= pos_fixed_stamped.getX();
+        y_out= pos_fixed_stamped.getY();
+        z_out= pos_fixed_stamped.getZ();
         // ROS_INFO("%f %f %f", x_out, y_out, z_out);
+        // tf::StampedTransform transform;
+        // tf_listener_.waitForTransform (fixed_frame_, "image_frame", imgheader->stamp, ros::Duration(1));
+        // tf_listener_.lookupTransform (fixed_frame_,  "image_frame", imgheader->stamp, transform);
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -179,7 +199,7 @@ void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
     double x_out, y_out, z_out;
     // ROS_INFO(in_msg->header.frame_id);
     std_msgs::Header h = in_msg->header;
-    getObjectPosition(camera_cx_, camera_cy_, h, x_out, y_out, z_out);
+    // getObjectPosition(camera_cx_, camera_cy_, h, x_out, y_out, z_out);
 
     ROS_DEBUG("New image received!");
 
@@ -196,16 +216,27 @@ void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
     // Recognize object
     // Dog
     // TODO: This only publishes the first time we detect the dog
-    cv::imwrite("input_image.png", image);
+    // cv::imwrite("input_image.png", image);
+
+    // double x_cam,y_cam,z_cam;
     if(!wasObjectDetected("dog"))
     {
         cdt_msgs::Object new_object;
-        bool valid_object = recognizeDog(image, timestamp, x, y, theta, new_object);
+        // bool valid_object = recognizeDog(image, timestamp, x, y, theta, new_object);
+        bool valid_object = recognizeObject(image, Colour::RED, in_msg->header,  new_object.position.x,  new_object.position.y,  new_object.position.z);
 
         // If recognized, add to list of detected objects
         if (valid_object)
         {
+            new_object.id = "dog";
+            new_object.header.stamp = timestamp;
+            new_object.header.frame_id = fixed_frame_;
+            // new_object.position.x = robot_x +  cos(robot_theta)*dog_position_base_x + sin(-robot_theta) * dog_position_base_y;
+            // new_object.position.y = robot_y +  sin(robot_theta)*dog_position_base_x + cos(robot_theta) * dog_position_base_y;
+            // new_object.position.z = 0.0     + camera_extrinsic_z_ + -dog_position_camera_y;
+
             detected_objects_.objects.push_back(new_object);
+            ROS_INFO("Found a dog!");
         }
     }
     if(!wasObjectDetected("barrow"))
@@ -363,8 +394,36 @@ cv::Mat ObjectDetector::applyBoundingBox(const cv::Mat1b &in_mask, double &x, do
         drawing.at<int>(row, x_max) = 1;
     }
 
-    cv::imwrite("bounding_box.png", drawing);
+    // cv::imwrite("bounding_box.png", drawing);
     return drawing;
+}
+
+
+bool ObjectDetector::recognizeObject(const cv::Mat &in_image, const Colour &colour, const std_msgs::Header &in_header, 
+                                  double& x_map, double& y_map, double& z_map)
+{
+    double obj_center_x;
+    double obj_center_y;
+    double obj_image_height;
+    double obj_image_width;
+
+    cv::Mat in_image_filt = applyColourFilter(in_image, colour);
+
+    if (countNonZero(in_image_filt) < 1)
+    {
+        return false;
+    }
+
+    cv::Mat in_image_bounding_box = applyBoundingBox(in_image_filt, obj_center_x, obj_center_y, obj_image_width, obj_image_height);
+
+    if(getObjectPosition(obj_center_x,obj_center_y,in_header,x_map, y_map, z_map))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool ObjectDetector::recognizeDog(const cv::Mat &in_image, const ros::Time &in_timestamp, 
@@ -379,7 +438,7 @@ bool ObjectDetector::recognizeDog(const cv::Mat &in_image, const ros::Time &in_t
 
     // TODO: the functions we use below should be filled to make this work
     cv::Mat in_image_red = applyColourFilter(in_image, Colour::RED);
-    cv::imwrite("dog.png", in_image_red);
+    // cv::imwrite("dog.png", in_image_red);
 
 
     cv::Mat in_image_bounding_box = applyBoundingBox(in_image_red, dog_image_center_x, dog_image_center_y, dog_image_width, dog_image_height);
@@ -435,7 +494,7 @@ bool ObjectDetector::recognizeBarrow(const cv::Mat &in_image, const ros::Time &i
 
     // TODO: the functions we use below should be filled to make this work
     cv::Mat in_image_barrow = applyColourFilter(in_image, Colour::GREEN);
-    cv::imwrite("barrow.png", in_image_barrow);
+    // cv::imwrite("barrow.png", in_image_barrow);
 
     cv::Mat in_image_bounding_box = applyBoundingBox(in_image_barrow, barrow_image_center_x, barrow_image_center_y, barrow_image_width, barrow_image_height);
 
@@ -490,7 +549,7 @@ bool ObjectDetector::recognizeBarrel(const cv::Mat &in_image, const ros::Time &i
 
     // TODO: the functions we use below should be filled to make this work
     cv::Mat in_image_barrel = applyColourFilter(in_image, Colour::YELLOW);
-    cv::imwrite("barrel.png", in_image_barrel);
+    // cv::imwrite("barrel.png", in_image_barrel);
 
     cv::Mat in_image_bounding_box = applyBoundingBox(in_image_barrel, barrel_image_center_x, barrel_image_center_y, barrel_image_width, barrel_image_height);
 
@@ -545,7 +604,7 @@ bool ObjectDetector::recognizeBox(const cv::Mat &in_image, const ros::Time &in_t
 
     // TODO: the functions we use below should be filled to make this work
     cv::Mat in_image_blue = applyColourFilter(in_image, Colour::BLUE);
-    cv::imwrite("box.png", in_image_blue);
+    // cv::imwrite("box.png", in_image_blue);
 
     cv::Mat in_image_bounding_box = applyBoundingBox(in_image_blue, box_image_center_x, box_image_center_y, box_image_width, box_image_height);
 
