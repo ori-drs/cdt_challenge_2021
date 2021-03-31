@@ -199,7 +199,6 @@ void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
     double x_out, y_out, z_out;
     // ROS_INFO(in_msg->header.frame_id);
     std_msgs::Header h = in_msg->header;
-    // getObjectPosition(camera_cx_, camera_cy_, h, x_out, y_out, z_out);
 
     ROS_DEBUG("New image received!");
 
@@ -417,7 +416,7 @@ bool ObjectDetector::recognizeObject(const cv::Mat &in_image, const Colour &colo
 
     cv::Mat in_image_filt = applyColourFilter(in_image, colour);
 
-    if (countNonZero(in_image_filt) < 1)
+    if (obj_center_x < 0 || obj_image_width < 100 || obj_image_height < 100)
     {
         return false;
     }
