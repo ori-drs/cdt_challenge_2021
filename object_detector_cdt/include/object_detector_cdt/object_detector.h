@@ -2,7 +2,9 @@
 
 #include <string>
 #include <math.h>
-// ROS stuff g
+#include <algorithm>
+
+// ROS stuff
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 #include <image_transport/subscriber_filter.h>
@@ -20,6 +22,7 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <iostream>
 
 //PointCloud stuff
@@ -31,7 +34,7 @@
 #include <tf_conversions/tf_eigen.h>
 
 // Colours
-enum Colour { RED=0, YELLOW=0, GREEN=1,  BLUE=2 };
+enum Colour { RED=0, YELLOW=1, GREEN=2,  BLUE=3 };
 
 class ObjectDetector
 {
@@ -109,6 +112,19 @@ private:
     bool recognizeDog(const cv::Mat &in_image, const ros::Time &in_timestamp, 
                       const double& robot_x, const double& robot_y, const double& robot_theta,
                       cdt_msgs::Object &out_new_object);
+
+    bool recognizeBarrow(const cv::Mat &in_image, const ros::Time &in_timestamp, 
+                      const double& robot_x, const double& robot_y, const double& robot_theta,
+                      cdt_msgs::Object &out_new_object);
+
+    bool recognizeBox(const cv::Mat &in_image, const ros::Time &in_timestamp, 
+                      const double& robot_x, const double& robot_y, const double& robot_theta,
+                      cdt_msgs::Object &out_new_object);
+
+    bool recognizeBarrel(const cv::Mat &in_image, const ros::Time &in_timestamp, 
+                      const double& robot_x, const double& robot_y, const double& robot_theta,
+                      cdt_msgs::Object &out_new_object);
+
 
     
     // Utils
