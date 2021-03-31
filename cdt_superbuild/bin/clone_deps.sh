@@ -13,3 +13,6 @@ git clone --branch release git@github.com:ANYbotics/kindr.git
 
 # Kindr ROS
 git clone --branch master git@github.com:ANYbotics/kindr_ros.git
+
+# Velodyne simulation
+git clone --branch 1.0.12 https://bitbucket.org/DataspeedInc/velodyne_simulator.git
