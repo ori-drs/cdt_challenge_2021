@@ -57,7 +57,14 @@ void GraphPlanner::findClosestNodes(const double& robot_x, const double& robot_y
 
 void GraphPlanner::generateGraphFromMsg(Eigen::MatrixXd & graph)
 {
-    // TODO fill the graph representation
+    // TODO fill the graph representation (adjacency matrix)
+    for(int i=0; i<graph_size; i++){
+        for(int j=0; j<graph_.nodes.at(i).neighbors_id.size(); j++){
+
+            graph(i, graph_.nodes.at(i).neighbors_id.at(j).data) = 1;
+
+        }
+    }
 }
 
 bool GraphPlanner::planPath(const double& robot_x, 
@@ -68,7 +75,7 @@ bool GraphPlanner::planPath(const double& robot_x,
 {
        
     std::vector<geometry_msgs::Pose> graph_nodes;
-    
+
     findClosestNodes(robot_x, robot_y, robot_theta, goal_pose, graph_nodes);    
 
     Eigen::Vector2d goal(graph_nodes.at(0).position.x, graph_nodes.at(0).position.y);
@@ -79,7 +86,7 @@ bool GraphPlanner::planPath(const double& robot_x,
 
     int no_vertices = graph_.nodes.size();
 
-    Eigen::MatrixXd graph(no_vertices, no_vertices);
+    Eigen::MatrixXd graph = Eigen::MatrixXd::Zero(no_vertices, no_vertices);
 
     generateGraphFromMsg(graph);
 
