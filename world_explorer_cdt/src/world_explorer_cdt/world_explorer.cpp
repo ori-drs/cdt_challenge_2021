@@ -145,8 +145,17 @@ void WorldExplorer::run()
 
 }
 
+// void PlanTrip()
+// {
+//     // get the traversability map from world_modelling 
+//     // frontiers -- potential points of intreest 
+//     // can use RRT to find a route  
+// }
+
 void WorldExplorer::plan()
 {
+ 
+
     // We only run the planning if there are frontiers available
     if(frontiers_.frontiers.size() > 0)
     {
@@ -159,6 +168,7 @@ void WorldExplorer::plan()
         
         // Analyze and sort frontiers
         std::vector<Eigen::Vector2d> goals = local_planner_.searchFrontiers(frontiers_, robot_x, robot_y, robot_theta);
+
 
         // TODO Choose a frontier, work it off if it is valid and send it to the position controller
         // here we just use the first one as an example
