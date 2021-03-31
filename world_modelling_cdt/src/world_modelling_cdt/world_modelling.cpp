@@ -54,8 +54,8 @@ void WorldModelling::readParameters(ros::NodeHandle &nh)
     nh.param("distance_to_delete_frontier", distance_to_delete_frontier_, 2.5f);
     nh.param("frontiers_search_angle_resolution", frontiers_search_angle_resolution_, 30.f);
 
-    nh.param("trav_check_distance", trav_check_distance_, 30.f);
-    nh.param("trav_gradient_limit", trav_gradient_limit_, 30.f);
+    nh.param("trav_check_distance", trav_check_distance_, 0.3f);
+    nh.param("trav_gradient_limit", trav_gradient_limit_, 0.1f);
 
 }
 
@@ -185,6 +185,9 @@ void WorldModelling::computeTraversability(const grid_map::GridMap &grid_map)
     // Create a new traversability layer with initial value 0.0
     traversability_.add("traversability", 0.0);
 
+    // Grid resolution
+    const float step = traversability_.getResolution(); // We use the map resolution as the search step
+
     // Iterate the traversability map to apply a threshold on the height
     for (grid_map::GridMapIterator iterator(traversability_); !iterator.isPastEnd(); ++iterator)
     {
@@ -196,12 +199,57 @@ void WorldModelling::computeTraversability(const grid_map::GridMap &grid_map)
             // How can we figure out if an area is traversable or not?
             // YOu should fill with a 1.0 if it's traversable, and -1.0 in the other case
 
-            // Currently just using a really simple approach - if the elevation is too large, it's not traversable
-            float trav_value = -1.0;
 
-            if (traversability_.at("elevation", *iterator) < elevation_threshold_) {
-                trav_value = 1.0;
+            // Currently just using a really simple approach - if the elevation is too large, it's not traversable
+            float trav_value = 1.0;
+
+            grid_map::Index index = iterator.getUnwrappedIndex();
+
+            int steps = trav_check_distance_ / step;
+            ROS_INFO_STREAM("STEPS: " << steps << ", " << trav_check_distance_ << ", " << step);
+            int x_start = index.x() - steps/2;
+            int y_start = index.y() - steps/2;
+            grid_map::Position query_point;
+            int xi, yi;
+
+            float min_elev = 1000;
+            float max_elev = -1000;
+            float elev;
+
+            for (int i = 0; i < steps; i++)
+            {
+                for (int j = 0; j < steps; j++) 
+                {
+                    xi = x_start + i;
+                    yi = y_start + j;
+                    index = grid_map::Index(xi, yi);
+
+                    if (!traversability_.isValid(index))
+                    {
+                        continue;
+                    }
+
+                    elev = traversability_.at("elevation", index);
+                    min_elev = std::min(elev, min_elev);
+                    max_elev = std::max(elev, max_elev);
+
+                    if (trav_value < 0) break;
+                } 
+
+                // If difference of elevations is too large, non-traversable
+                if (max_elev - min_elev > 0.4) {
+                    trav_value = -1.0;
+                }
+
+                if (trav_value < 0) break;
             }
+
+            ROS_INFO_STREAM("Min and max elev: " << min_elev << ", " << max_elev << ", " << trav_value);
+
+
+            // if (traversability_.at("elevation", *iterator) < elevation_threshold_) {
+            //     trav_value = 1.0;
+            // }
 
             traversability_.at("traversability", *iterator) = trav_value;
         }
