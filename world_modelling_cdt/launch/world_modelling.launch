@@ -14,7 +14,6 @@
   <arg name="elevation_threshold"          default="0.1"/>
   <arg name="neighbour_path_distance"      default="5"/>
   
-
   <!-- Launch object detector -->
   <node pkg="world_modelling_cdt" type="world_modelling_cdt_node" name="world_modelling" output="screen">
     <param name="input_map_topic"              value="$(arg input_map_topic)"/>

@@ -52,7 +52,7 @@ void WorldModelling::readParameters(ros::NodeHandle &nh)
 
     nh.param("max_distance_to_search_frontiers", max_distance_to_search_frontiers_, 3.f);
     nh.param("distance_to_delete_frontier", distance_to_delete_frontier_, 2.5f);
-    nh.param("frontiers_search_angle_resolution", frontiers_search_angle_resolution_, 0.5f);
+    nh.param("frontiers_search_angle_resolution", frontiers_search_angle_resolution_, 30.f);
 }
 
 void WorldModelling::elevationMapCallback(const grid_map_msgs::GridMap &in_grid_map)
@@ -100,7 +100,7 @@ float WorldModelling::distanceBetweenNodes(cdt_msgs::GraphNode n1, cdt_msgs::Gra
     float x2 = n2.pose.position.x; 
     float y2 = n2.pose.position.y; 
     
-    ROS_INFO_STREAM("Distance" << std::hypot(x1 - x2, y1 - y2));
+    // ROS_INFO_STREAM("Distance" << std::hypot(x1 - x2, y1 - y2));
     return std::hypot(x1 - x2, y1 - y2); 
 }
 
@@ -139,8 +139,8 @@ bool WorldModelling::updateGraph(const float &x, const float &y, const float &th
         new_node_id.data = num_nodes_;
 
         for (int i = 0; i < num_nodes_; i++) {
-            ROS_INFO_STREAM("Neighbour distance " << neighbor_distance_);
-            ROS_INFO_STREAM("Neighbour path distance " << neighbor_path_distance_ << ", " << new_node.id.data - i << ", " << i);
+            // ROS_INFO_STREAM("Neighbour distance " << neighbor_distance_);
+            // ROS_INFO_STREAM("Neighbour path distance " << neighbor_path_distance_ << ", " << new_node.id.data - i << ", " << i);
             if (distanceBetweenNodes(new_node, exploration_graph_.nodes[i]) > neighbor_distance_) 
             {
                 continue;
@@ -164,6 +164,9 @@ bool WorldModelling::updateGraph(const float &x, const float &y, const float &th
     exploration_graph_.nodes.push_back(new_node);
 
     num_nodes_++; // Increase the number of added nodes
+
+    ROS_INFO("Adding node to graph!!------------------------------------_");
+
     return true;
 }
 
@@ -188,7 +191,14 @@ void WorldModelling::computeTraversability(const grid_map::GridMap &grid_map)
             // TODO Fill the traversability at each position using some criterion based on the other layers
             // How can we figure out if an area is traversable or not?
             // YOu should fill with a 1.0 if it's traversable, and -1.0 in the other case
-            traversability_.at("traversability", *iterator) = -1.0;
+
+            // Currently just using a really simple approach - if the elevation is too large, it's not traversable
+            float trav_value = -1.0;
+
+            if (traversability_.at("elevation", *iterator) < elevation_threshold_) {
+                trav_value = 1.0;
+            }
+            traversability_.at("traversability", *iterator) = trav_value;
         }
     }
 
@@ -200,23 +210,27 @@ void WorldModelling::findCurrentFrontiers(const float &x, const float &y, const 
     // TODO: Here you need to create "frontiers" that denote the edges of the known space
     // They're used to guide robot to new places
 
-    // If the direction needs a frontier, create one and store in current frontiers
-    if (first_frontier_)
-    {
-        // We create the frontier as a stamped point
 
-        // In this example we set a frontier 5 meters ahead of the robot
+    grid_map::Position query_point;
+
+    for (float angle = 0; angle < 360.0; angle+=frontiers_search_angle_resolution_) {
         // The frontiers are expresed in the fixed frame
         geometry_msgs::PointStamped frontier;
         frontier.header.stamp = time;                  // We store the time the frontier was created
         frontier.header.frame_id = input_fixed_frame_; // And the frame it's referenced to
-        frontier.point.x = x + 5.0;                    // And the position, of course
-        frontier.point.y = y;
+        frontier.point.x = x + max_distance_to_search_frontiers_ * cos(M_PI/180.f * angle);  
+        frontier.point.y = y + max_distance_to_search_frontiers_ * sin(M_PI/180.f * angle);
+
+
+        // Make sure the point is within the map
+        query_point = grid_map::Position(frontier.point.x, frontier.point.y);
+        if (!traversability_.isInside(query_point))
+        {
+            continue;
+        }
 
         // Finally we store it in the current frontiers' list
-        current_frontiers_.frontiers.push_back(frontier);
-
-        first_frontier_ = false; // This is to avoid creating more than one frontiers. This is just for the example, you may need to remove this
+        frontiers_.frontiers.push_back(frontier);
     }
 
     ROS_DEBUG_STREAM("[WorldModelling] Found " << current_frontiers_.frontiers.size() << " new frontiers");
@@ -237,11 +251,12 @@ void WorldModelling::updateFrontiers(const float &x, const float &y, const float
 
     // Filtered frontiers
     cdt_msgs::Frontiers filtered_frontiers;
+    current_frontiers_.frontiers.clear();
 
     // Preallocate query point
     grid_map::Position query_point;
 
-    // Iterate
+    // Go through accumulated frontiers and filter them
     for (auto frontier : frontiers_.frontiers)
     {
         const float &frontier_x = frontier.point.x;
@@ -250,18 +265,51 @@ void WorldModelling::updateFrontiers(const float &x, const float &y, const float
         // Compute distance to frontier
         float distance_to_frontier = std::hypot(frontier_x - x, frontier_y - y);
 
-        // If it's close enough, skip
+        // // If it's close enough, skip
         if (distance_to_frontier < distance_to_delete_frontier_)
         {
             continue;
         }
 
+        // If point is not traversable, skip
+        query_point = grid_map::Position(frontier_x, frontier_y);
+        if (!traversability_.isInside(query_point)) 
+        {
+            continue;
+        }
+
+        if (traversability_.atPosition("traversability", query_point) < 0) {
+            continue;
+        }
+
+        // Check the line between the current location and the frontier
+        float unit_x = (frontier_x - x)/ distance_to_frontier;
+        float unit_y = (frontier_y - y)/ distance_to_frontier;
+        int num_steps = distance_to_frontier / step + 1;
+        bool is_traversable = true; 
+        
+        for (int i = 1; i < num_steps; i++) { 
+            grid_map::Position pos(x + unit_x*step*i, y + unit_y*step*i);
+            if (!traversability_.atPosition("traversability", pos) < 0) {
+                is_traversable = false;
+                break;
+            }
+        }
+
+        if (!is_traversable) {
+            ROS_INFO_STREAM("Path to frontier is not traversable");
+            continue;
+        }
+        
         // If the previous test are passed, add frontier to filtered list
+        // filtered_frontiers.frontiers.push_back(frontier);
         current_frontiers_.frontiers.push_back(frontier);
     }
 
+    // ROS_INFO("BEFORE-------------------------------------------");
     // Finally, we update the frontiers using the current ones
     frontiers_ = current_frontiers_;
+    // ROS_INFO("After-------------------------------------------");
 }
 
 void WorldModelling::publishData(const grid_map_msgs::GridMapInfo &in_grid_map_info)
