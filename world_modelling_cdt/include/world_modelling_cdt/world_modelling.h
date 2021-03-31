@@ -98,6 +98,6 @@ private:
     // Utils
     void getRobotPose(float &x, float &y, float &theta);
     float distanceBetweenNodes(cdt_msgs::GraphNode n1, cdt_msgs::GraphNode n2);
-    float computeGradientMagnitude(float x, float y);
+    float getSlopeAtIndex(const grid_map::Index index);
 
 };
