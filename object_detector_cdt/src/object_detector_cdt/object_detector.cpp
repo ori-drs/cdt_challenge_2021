@@ -33,7 +33,7 @@ ObjectDetector::ObjectDetector(ros::NodeHandle &nh)
     angle_margin_ = 2*180/M_PI;
 }
 
-void ObjectDetector::getObjectPosition(const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x, double &y, double &z)
+void ObjectDetector::getObjectPosition(const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x_out, double &y_out, double &z_out)
 {
     sensor_msgs::PointCloud2 pc2_msg_lidar, pc2_msg_cam;
 
@@ -45,9 +45,49 @@ void ObjectDetector::getObjectPosition(const float &pixelx, const float &pixely,
     pcl::PCLPointCloud2 pcl_pc;
     pcl_conversions::toPCL(pc2_msg_cam, pcl_pc);
 
-    double hor_angle = math.atan2((pixelx-camera_cx_)/camera_fx_);
-    double vert_angle = math.atan2((pixely-camera_cy_)/camera_fy_);
+    // hack for now
+    pcl::PointCloud<pcl::PointXYZ> pcl_xyz;
+    pcl::fromPCLPointCloud2(pcl_pc, pcl_xyz);
 
+    double hor_angle = atan((pixelx-camera_cx_)/camera_fx_);
+    double vert_angle = atan((pixely-camera_cy_)/camera_fy_);
+
+    std::vector<pcl::PointXYZ> points;
+    double x,y,z, angle_hor, angle_ver;
+
+    for (int i; i<pcl_xyz.points.size(); i++)
+    {
+        x = pcl_xyz.points[i].x;
+        y = pcl_xyz.points[i].y;
+        z = pcl_xyz.points[i].z;
+
+        if (x<0.0)
+        {
+            continue;
+        }
+
+        angle_hor = atan2(x,z);
+        angle_ver = atan2(y,z);
+
+        if ((abs(angle_hor- hor_angle)<angle_margin_) && (abs(angle_ver - vert_angle)< angle_margin_))
+        {
+            points.push_back(pcl_xyz.points[i]);
+        }
+    }
+
+    // int n = points.size();
+    // if (n!=0)
+    // {
+    //     x_out = accumulate(points.x)
+    // }
+    pcl::PointXYZ temp_point = points.front();
+    x_out= temp_point.x;
+    y_out= temp_point.y;
+    z_out= temp_point.z;
+
+    ROS_INFO("%f %f %f", x_out, y_out, z_out);
+
+    
     // pcl::PCLPointCloud2 transformed_pcl;
     
     // // Get current pose
@@ -150,6 +190,9 @@ void ObjectDetector::lidarCallback(const sensor_msgs::PointCloud2 in_msg)
 
 void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
 {
+    double x_out, y_out, z_out;
+    getObjectPosition(0, 0, in_msg->header, x_out, y_out, z_out);
+
     ROS_DEBUG("New image received!");
 
     // Preallocate some variables
