@@ -8,7 +8,7 @@ import random
 from std_srvs.srv import EmptyRequest, Empty, EmptyResponse
 from visualization_msgs.msg import MarkerArray, Marker
 from geometry_msgs.msg import PoseStamped
-from std_msgs.msg import Int64
+from std_msgs.msg import Int64, String
 
 # CDT messages
 from cdt_msgs.msg import Graph, Frontiers, Object, ObjectList
@@ -78,13 +78,13 @@ class CdtGui(Plugin):
         self._widget.labelDog.setEnabled(False)
         self._widget.labelComputer.setEnabled(False)
         self._widget.labelBarrel.setEnabled(False)
-        self._widget.labelBurrow.setEnabled(False)
+        self._widget.labelBarrow.setEnabled(False)
         self._widget.labelDuck.setEnabled(False)
 
         self._widget.labelDogPosition.setText("Not found")
         self._widget.labelComputerPosition.setText("Not found")
         self._widget.labelBarrelPosition.setText("Not found")
-        self._widget.labelBurrowPosition.setText("Not found")
+        self._widget.labelBarrowPosition.setText("Not found")
         self._widget.labelDuckPosition.setText("Not found")
 
         # Setup subscriberstr_system_status
@@ -92,6 +92,8 @@ class CdtGui(Plugin):
         self.sub_manual_goal  = rospy.Subscriber("/move_base_simple/goal", PoseStamped, self.callback_manual_goal)
         self.sub_manual_goal2 = rospy.Subscriber("/goal", PoseStamped, self.callback_manual_goal)
         self.sub_exp_space    = rospy.Subscriber("/explored_space_percentage", Int64, self.callback_explored_space_percentage)
+        self.sub_team_name    = rospy.Subscriber("/team_name", String, self.callback_team_name)
+        self.sub_team_names   = rospy.Subscriber("/team_member_names", String, self.callback_team_member_names)
 
         self.mutex_objects = Lock()
         self.mutex_world = Lock()
@@ -173,7 +175,12 @@ class CdtGui(Plugin):
         self.world_explored_percentage = msg.data
         self.mutex_world.release()
         # self.update_world_coverage()
-        
+
+    def callback_team_name(self, msg):
+        self._widget.labelTeam.setText(str(msg.data))
+
+    def callback_team_member_names(self, msg):
+        self._widget.labelNames.setText(str(msg.data))        
  
     # Slots (callbacks when an event is triggered)
     def do_service_call(self, service_name):
@@ -248,9 +255,9 @@ class CdtGui(Plugin):
           self._widget.labelComputerPosition.setText(label)
 
         if obj.id == 'barrel':
-          self._widget.labelBarrell.setEnabled(True)
+          self._widget.labelBarrel.setEnabled(True)
           label = 'x: %.1f, y: %.1f' %(obj.position.x, obj.position.y)
-          self._widget.labelBarrellPosition.setText(label)
+          self._widget.labelBarrelPosition.setText(label)
 
         if obj.id == 'barrow':
           self._widget.labelBarrow.setEnabled(True)

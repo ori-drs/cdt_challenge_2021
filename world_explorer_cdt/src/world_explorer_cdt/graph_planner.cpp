@@ -56,7 +56,30 @@ void GraphPlanner::findClosestNodes(const double& robot_x, const double& robot_y
 }
 
 void GraphPlanner::generateGraphFromMsg(Eigen::MatrixXd & graph)
-{
+{   
+    
+    graph.setZero(); //=Eigen::MatrixXd::Zero();
+    // int gsize = graph_.nodes.size();
+    // graph.resize(gsize, gsize);
+    for (auto node: graph_.nodes)
+    {
+        double x_pos = node.pose.position.x;
+        double y_pos = node.pose.position.y;
+
+        for (auto neighbour_id: node.neighbors_id)
+        {
+            if (graph(node.id.data, neighbour_id.data)==0)
+            {
+                double neigh_x_pos = graph_.nodes[neighbour_id.data].pose.position.x;
+                double neigh_y_pos = graph_.nodes[neighbour_id.data].pose.position.y;
+                graph(node.id.data, neighbour_id.data) = std::hypot(x_pos- neigh_x_pos, y_pos - neigh_y_pos);
+                graph(neighbour_id.data, node.id.data) = graph(node.id.data, neighbour_id.data);
+            }
+        }
+
+
+
+    }
     // TODO fill the graph representation
 }
 
@@ -137,7 +160,21 @@ void GraphPlanner::dijkstra(const Eigen::MatrixXd& graph, int start_id, int goal
     Eigen::Vector2d goal(graph_.nodes.at(goal_id).pose.position.x, graph_.nodes.at(goal_id).pose.position.y);
     route.push_back(goal);
 
+    Eigen::Vector2d start(graph_.nodes.at(start_id).pose.position.x, graph_.nodes.at(start_id).pose.position.y);
+    int current_node_id = goal_id;
+    while (current_node_id!=start_id)
+    {
+        int next_node_id = path[current_node_id];
+        Eigen::Vector2d node(graph_.nodes.at(next_node_id).pose.position.x, graph_.nodes.at(next_node_id).pose.position.y);
+        route.push_back(node);
+        current_node_id = next_node_id;
+
+    }
+
+
+
     // TODO extract the final route
+
 }
 
 int GraphPlanner::minimumDist(double dist[], bool Dset[]) 

@@ -114,3 +114,19 @@ grid_map_filters:
       input_layer: elevation
       output_layer: elevation_inpainted
       radius: 0.05 # in m
+
+  # Inpaint surface normals
+  - name: surface_normals_inpainted
+    type: gridMapFilters/NormalVectorsFilter
+    params:
+      input_layer: elevation_inpainted
+      output_layers_prefix: normal_inpainted_
+      radius: 0.15
+      normal_vector_positive_axis: z
+
+  # Compute inpainted slope from surface normal.
+  - name: slope_inpainted
+    type: gridMapFilters/MathExpressionFilter
+    params:
+      output_layer: slope_inpainted
+      expression: acos(normal_inpainted_z) 

@@ -181,6 +181,8 @@ void WorldModelling::computeTraversability(const grid_map::GridMap &grid_map)
 
     // Copy elevation from input grid map to traversability grid map
     traversability_.add("elevation", grid_map["elevation_inpainted"]);
+    // Copy slope from input grid map to traversability grid map
+    traversability_.add("slope", grid_map["slope_inpainted"]);
 
     // Create a new traversability layer with initial value 0.0
     traversability_.add("traversability", 0.0);
