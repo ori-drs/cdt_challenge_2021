@@ -374,8 +374,8 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /mesh_dog_marker
-      Name: "Object: dog (detected)"
+      Marker Topic: /mesh_computer_marker
+      Name: "Object: computer (detected)"
       Namespaces:
         {}
       Queue Size: 1
@@ -383,7 +383,7 @@ Visualization Manager:
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /mesh_dog_marker
-      Name: "Object: barrel (detected)"
+      Name: "Object: dog (detected)"
       Namespaces:
         {}
       Queue Size: 1
