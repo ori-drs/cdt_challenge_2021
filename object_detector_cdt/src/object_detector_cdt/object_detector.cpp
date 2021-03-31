@@ -30,35 +30,45 @@ ObjectDetector::ObjectDetector(ros::NodeHandle &nh)
     barrow_real_height_     = 0.7;   // meters, note: includes the wheel and frame 
     computer_real_height_   = 0.5;   // meters 
     dog_real_height_        = 0.418; // meters, note: includes legs 
+    angle_margin_ = 2*180/M_PI;
 }
 
-void ObjectDetector::getObjectPosition(const sensor_msgs::PointCloud2 &in_msg, 
-const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x, double &y, double &z)
+void ObjectDetector::getObjectPosition(const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x, double &y, double &z)
 {
+    sensor_msgs::PointCloud2 pc2_msg_lidar, pc2_msg_cam;
+
+    findClosestLidarScan(imgheader.stamp,pc2_msg_lidar);
+    // Transform point cloud in camera frame
+    pcl_ros::transformPointCloud(imgheader.frame_id, pc2_msg_lidar, pc2_msg_cam, tf_listener_);
+
     // convert point cloud to PCL
     pcl::PCLPointCloud2 pcl_pc;
-    pcl_conversions::toPCL(in_msg, pcl_pc);
+    pcl_conversions::toPCL(pc2_msg_cam, pcl_pc);
 
-    pcl::PCLPointCloud2 transformed_pcl;
+    double hor_angle = math.atan2((pixelx-camera_cx_)/camera_fx_);
+    double vert_angle = math.atan2((pixely-camera_cy_)/camera_fy_);
+
+    // pcl::PCLPointCloud2 transformed_pcl;
     
-    // Get current pose
-    tf::StampedTransform lidar_to_camera_tf;
-    tf_listener_.waitForTransform(in_msg.header.frame_id, imgheader.frame_id,  ros::Time(0), ros::Duration(0.5));
-    try
-    {
-        tf_listener_.lookupTransform(in_msg.header.frame_id, imgheader.frame_id, ros::Time(0), lidar_to_camera_tf);
-    }
-    catch (tf::TransformException &ex)
-    {
-        ROS_ERROR("%s", ex.what());
-    }
+    // // Get current pose
+    // tf::StampedTransform lidar_to_camera_tf;
+    // tf_listener_.waitForTransform(pc2_msg.header.frame_id, imgheader.frame_id,  ros::Time(0), ros::Duration(0.5));
+    // try
+    // {
+    //     tf_listener_.lookupTransform(pc2_msg.header.frame_id, imgheader.frame_id, ros::Time(0), lidar_to_camera_tf);
+    // }
+    // catch (tf::TransformException &ex)
+    // {
+    //     ROS_ERROR("%s", ex.what());
+    // }
 
-    Eigen::Affine3f lidar_to_camera_eigen;
-    tf::Transform lidar_to_camera(&lidar_to_camera_tf);
-    tf::transformTFToEigen(lidar_to_camera, lidar_to_camera_eigen);
+    // Eigen::Affine3d lidar_to_camera_eigen;
+    // tf::Transform lidar_to_camera(lidar_to_camera_tf);
+    // tf::transformTFToEigen(lidar_to_camera, lidar_to_camera_eigen);
 
-    // transform point cloud
-    pcl::transformPointCloud(pcl_pc, transformed_pcl, lidar_to_camera_eigen);
+    // // transform point cloud
+    // // TODO Check transform is the right way
+    // pcl::transformPointCloud(pcl_pc, transformed_pcl, lidar_to_camera_eigen);
 
 
 

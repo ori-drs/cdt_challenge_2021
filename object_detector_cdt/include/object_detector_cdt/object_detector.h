@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-
-// ROS stuff
+#include <math.h>
+// ROS stuff g
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 #include <image_transport/subscriber_filter.h>
@@ -74,7 +74,7 @@ class ObjectDetector
 
     // Objects' heights
     double barrel_real_height_, barrow_real_height_, computer_real_height_, dog_real_height_;
-    
+    double angle_margin_;
 public:
     // Constructor
     ObjectDetector(ros::NodeHandle &nh);
@@ -84,7 +84,7 @@ private:
     void readParameters(ros::NodeHandle &nh);
 
     //Determine object position
-    void getObjectPosition(const sensor_msgs::PointCloud2 &in_msg, const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x, double &y, double &z);
+    void getObjectPosition(const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x, double &y, double &z);
 
 
     // The callback implements all the actions
