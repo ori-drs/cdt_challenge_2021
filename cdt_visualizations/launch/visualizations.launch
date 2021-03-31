@@ -6,8 +6,8 @@
   <arg name="input_fixed_frame" default="odom"/>
   <arg name="input_base_frame"  default="base_link"/>
   <arg name="world"             default="arena_simple"/>
-  <arg name="team_name"         default="please enter your team name in cdt_visualizations/launch/visualizations.launch"/>
-  <arg name="team_member_names" default="please enter your team member names in cdt_visualizations/launch/visualizations.launch"/>
+  <arg name="team_name"         default="Simulated sheeps"/>
+  <arg name="team_member_names" default="Alex, Benjamin, Laurynas, Lisa"/>
 
   <!-- Launch explored space visualization -->
   <node pkg="cdt_visualizations" type="explored_space_vis_node" name="explored_space_vis" output="screen">
