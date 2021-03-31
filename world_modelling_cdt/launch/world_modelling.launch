@@ -10,8 +10,7 @@
   <arg name="output_frontiers_topic"       default="/frontiers"/>
   <arg name="node_creation_distance"       default="1.0"/>
   <arg name="neighbor_distance"            default="2.0"/>
-  <arg name="elevation_threshold"          default="0.1"/>
-  
+  <arg name="elevation_threshold"          default="0.1"/>  
 
   <!-- Launch object detector -->
   <node pkg="world_modelling_cdt" type="world_modelling_cdt_node" name="world_modelling" output="screen">
@@ -31,7 +30,8 @@
     
     <param name="max_distance_to_search_frontiers"    value="5.0"/>
     <param name="distance_to_delete_frontier"         value="4.0"/>
-    <param name="frontiers_search_angle_resolution"   value="20"/> <!-- Degrees -->
+    <param name="max_distance_to_delete_frontier"     value="8.0"/>
+    <param name="frontiers_search_angle_resolution"   value="0.349066"/> <!-- Radians -->
   
   </node>
 
