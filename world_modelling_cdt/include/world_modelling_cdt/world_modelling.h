@@ -43,7 +43,9 @@ class WorldModelling
     float elevation_threshold_;
     float max_distance_to_search_frontiers_;
     float distance_to_delete_frontier_;
-    float frontiers_search_angle_resolution_;
+    float frontier_search_angle_resolution_;
+    float frontier_search_angle_;
+    float frontier_min_separation_;
 
     // output topics
     std::string output_graph_topic_;
@@ -54,6 +56,7 @@ class WorldModelling
     cdt_msgs::Graph exploration_graph_;
     grid_map::GridMap traversability_;
     cdt_msgs::Frontiers current_frontiers_;
+    cdt_msgs::Frontiers all_frontiers_;
     cdt_msgs::Frontiers frontiers_;
 
     // Last added pose
@@ -99,5 +102,6 @@ private:
     void getRobotPose(float &x, float &y, float &theta);
     float distanceBetweenNodes(cdt_msgs::GraphNode n1, cdt_msgs::GraphNode n2);
     float getSlopeAtIndex(const grid_map::Index index);
+    bool isTraversable(float x, float y);
 
 };
