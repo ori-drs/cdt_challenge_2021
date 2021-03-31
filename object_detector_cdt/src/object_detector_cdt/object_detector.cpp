@@ -75,7 +75,7 @@ void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
     // Dog
     // TODO: This only publishes the first time we detect the dog
     cv::imwrite("input_image.png", image);
-    if(!wasObjectDetected("dog")) // TODO: implement a better check
+    if(!wasObjectDetected("dog"))
     {
         cdt_msgs::Object new_object;
         bool valid_object = recognizeDog(image, timestamp, x, y, theta, new_object);
@@ -86,7 +86,7 @@ void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
             detected_objects_.objects.push_back(new_object);
         }
     }
-    if(!wasObjectDetected("barrow")) // TODO: implement a better check
+    if(!wasObjectDetected("barrow"))
     {
         cdt_msgs::Object new_object;
         bool valid_object = recognizeBarrow(image, timestamp, x, y, theta, new_object);
@@ -97,7 +97,7 @@ void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
             detected_objects_.objects.push_back(new_object);
         }
     }
-    if(!wasObjectDetected("barrel")) // TODO: implement a better check
+    if(!wasObjectDetected("barrel"))
     {
         cdt_msgs::Object new_object;
         bool valid_object = recognizeBarrel(image, timestamp, x, y, theta, new_object);
@@ -108,7 +108,7 @@ void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
             detected_objects_.objects.push_back(new_object);
         }
     }
-    if(!wasObjectDetected("computer")) // TODO: implement a better check
+    if(!wasObjectDetected("computer"))
     {
         cdt_msgs::Object new_object;
         bool valid_object = recognizeBox(image, timestamp, x, y, theta, new_object);
@@ -140,39 +140,64 @@ cv::Mat ObjectDetector::applyColourFilter(const cv::Mat &in_image_bgr, const Col
     // new image
     cv::Mat in_image_hsv;
     cv::cvtColor(in_image_bgr, in_image_hsv, cv::COLOR_BGR2HSV);
+    double limit = .01;
     // Here you should apply some binary threhsolds on the image to detect the colors
     // The output should be a binary mask indicating where the object of a given color is located
     cv::Mat mask;
-
+    cv::imwrite("hsv.png", in_image_hsv);
     if (colour == Colour::RED) {
         cv::Mat mask2;
         inRange(in_image_hsv, cv::Scalar(  0./360.*255,  30./100.*255,  17./100.*255), cv::Scalar( 36./360.*255, 100./100.*255, 100./100.*255), mask);
         inRange(in_image_hsv, cv::Scalar(  320./360.*255,  30./100.*255,  17./100.*255), cv::Scalar( 359./360.*255, 100./100.*255, 100./100.*255), mask2);
         mask = mask | mask2;
     } else if (colour == Colour::YELLOW) {
-        inRange(in_image_hsv, cv::Scalar(  40./360.*255,  17./100.*255,  10./100.*255), cv::Scalar( 70./360.*255, 100./100.*255, 100./100.*255), mask);
+        // inRange(in_image_hsv, cv::Scalar(  28.,  194,  30), cv::Scalar( 68., 255, 255), mask);
+        // inRange(in_image_hsv, cv::Scalar(  47./360.*255,  15./100.*255,  15./100.*255), cv::Scalar( 78./360.*255, 100./100.*255, 100./100.*255), mask);
+        inRange(in_image_hsv, cv::Scalar(  47./2,  15./100.*255,  15./100.*255), cv::Scalar( 78./2, 100./100.*255, 100./100.*255), mask);
+        limit = .04;
     } else if (colour == Colour::GREEN) {
-        inRange(in_image_hsv, cv::Scalar(  83./360.*255,  30./100.*255,  17./100.*255), cv::Scalar( 154./360.*255, 100./100.*255, 100./100.*255), mask);
+        // inRange(in_image_hsv, cv::Scalar(  83./360.*255,  30./100.*255,  17./100.*255), cv::Scalar( 154./360.*255, 100./100.*255, 100./100.*255), mask);
+        inRange(in_image_hsv, cv::Scalar(  83./2,  30./100.*255,  17./100.*255), cv::Scalar( 154./2, 100./100.*255, 100./100.*255), mask);
     } else if (colour == Colour::BLUE) {
-        inRange(in_image_hsv, cv::Scalar(  200./360.*255,  30./100.*255,  17./100.*255), cv::Scalar( 277./360.*255, 100./100.*255, 100./100.*255), mask);
+        // inRange(in_image_hsv, cv::Scalar(  200./360.*255,  80./100.*255,  15./100.*255), cv::Scalar( 280./360.*255, 100./100.*255, 100./100.*255), mask);
+        inRange(in_image_hsv, cv::Scalar(  200./2,  80./100.*255,  15./100.*255), cv::Scalar( 280./2, 100./100.*255, 100./100.*255), mask);
     } else {
         // Report color not implemented
         ROS_ERROR_STREAM("[ObjectDetector::colourFilter] colour (" << colour << "  not implemented!");
     }
     // dilate -> erode to form cohesive connected components
-    erode(mask, mask, cv::Mat());
-    dilate(mask, mask, cv::Mat());
     dilate(mask, mask, cv::Mat());
     dilate(mask, mask, cv::Mat());
     dilate(mask, mask, cv::Mat());
     erode(mask, mask, cv::Mat());
     erode(mask, mask, cv::Mat());
     erode(mask, mask, cv::Mat());
+    cv::Mat labels;
+    int n = cv::connectedComponents(mask, labels);
+    int max_label = 0;
+    double max_label_area = 0.;
+    cv::Mat max_label_mask;
+    for (int i=1; i<n; i++){
+        cv::Mat lbl_mask;
+        cv::Mat area_mask;
+        inRange(labels, cv::Scalar(i), cv::Scalar(i), lbl_mask);
+        lbl_mask.convertTo(area_mask, CV_32F);
+        area_mask /= 255.;
+        double area = cv::sum(area_mask)[0];
+        if (area > max_label_area) {
+            max_label = i;
+            max_label_area = area;
+            lbl_mask.copyTo(max_label_mask);
+        }
 
-    // TODO maybe run connected components
-
+    }
+    double thresh = double(in_image_bgr.cols * in_image_bgr.rows) * limit;
     // We return the mask, that will be used later
-    return mask;
+    if (max_label_area > thresh){
+        cv::imwrite("pre-filt-mask.png", mask);
+        return max_label_mask;
+    }
+    return cv::Mat::zeros(mask.rows, mask.cols, mask.type());
 }
 
 cv::Mat ObjectDetector::applyBoundingBox(const cv::Mat1b &in_mask, double &x, double &y, double &width, double &height) {
