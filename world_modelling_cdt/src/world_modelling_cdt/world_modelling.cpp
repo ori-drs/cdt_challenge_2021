@@ -56,7 +56,7 @@ void WorldModelling::readParameters(ros::NodeHandle &nh)
 
 void WorldModelling::elevationMapCallback(const grid_map_msgs::GridMap &in_grid_map)
 {
-    // ROS_INFO("New elevation map received!");
+    ROS_DEBUG("New elevation map received!");
     // Convert grid map and store in local variable
     grid_map::GridMap grid_map;
     grid_map::GridMapRosConverter::fromMessage(in_grid_map, grid_map);
@@ -91,42 +91,54 @@ void WorldModelling::elevationMapCallback(const grid_map_msgs::GridMap &in_grid_
     publishData(grid_map_info);
 }
 
+float distance(cdt_msgs::GraphNode &node, cdt_msgs::GraphNode &other_node) {
+    return std::hypot(node.pose.position.x - other_node.pose.position.x, node.pose.position.y - other_node.pose.position.y); 
+}
+
 bool WorldModelling::updateGraph(const float &x, const float &y, const float &theta)
 {
-    // TODO: you need to update the exploration_graph_ using the current pose
 
-    // You may need to change this flag with some conditions
+    /**
+     * Creates a node if it is sufficiently far from any other node and updates
+     * the graph with its neighbours
+     */ 
+
+    cdt_msgs::GraphNode new_node;
+    new_node.pose.position.x = x;
+    new_node.pose.position.y = y;
+    new_node.id.data = num_nodes_; // The id is simply the number of the node
+
+    // check that no other nodes are close to this graph node
     bool create_new_node = true;
 
-    // if the condition is satisfied, you should create a new node and add it to the graph
-    if(first_node_)
+    for (auto node: exploration_graph_.nodes) {
+        if (distance(new_node, node) < node_creation_distance_) {
+            create_new_node = false;
+        }
+    }
+    
+
+    if(create_new_node)
     {
-        // Here we briefly show how to fill the data
-        cdt_msgs::GraphNode new_node;
-        new_node.pose.position.x = x;
-        new_node.pose.position.y = y;
-        new_node.id.data = num_nodes_; // The id is simply the number of the node
-        
         // Adding neighbors
-        std_msgs::Int32 neighbor_id;
-        neighbor_id.data = 0;
-        new_node.neighbors_id.push_back(neighbor_id);  // here we fill the neighbors of the new_node
+        for (auto node: exploration_graph_.nodes) {
+           if (distance(new_node, node) < neighbor_distance_) {
+                new_node.neighbors_id.push_back(node.id);
+                node.neighbors_id.push_back(new_node.id);
+           }
+        }
 
         // Finally add the new node to the graph (since all the properties are filled)
         exploration_graph_.nodes.push_back(new_node);
 
         num_nodes_++; // Increase the number of added nodes
 
-        first_node_ = false; // This is to avoid creating more than one nodes. This is just for the example, you may need to remove this
-
         return true;
     }
-    else
-    {
-        // We didn't create a new node
-        return false;
-    }
+    
+    return false;
 }
+
 
 void WorldModelling::computeTraversability(const grid_map::GridMap &grid_map)
 {
@@ -140,24 +152,38 @@ void WorldModelling::computeTraversability(const grid_map::GridMap &grid_map)
     traversability_.add("traversability", 0.0);
 
     // Iterate the traversability map to apply a threshold on the height
+    uint32_t traversible_points = 0;
+    uint32_t total_points = 0;
     for (grid_map::GridMapIterator iterator(traversability_); !iterator.isPastEnd(); ++iterator)
     {
         // We only want to use the valid values
         if (traversability_.isValid(*iterator, "elevation"))
         {
-
-            // TODO Fill the traversability at each position using some criterion based on the other layers
-            // How can we figure out if an area is traversable or not?
-            // YOu should fill with a 1.0 if it's traversable, and -1.0 in the other case
-            traversability_.at("traversability", *iterator) = -1.0;
+            // Since the location has no significant slopes, only walls, we can just use a simple
+            // height threshold
+            if (traversability_.at("elevation", *iterator) > elevation_threshold_) {
+                traversability_.at("traversability", *iterator) = -1.0;
+            }
+            else {
+                traversability_.at("traversability", *iterator) = 1.0;
+                traversible_points++;
+            }
+            total_points++;
         }
     }
+    ROS_INFO_STREAM("Found " << traversible_points << " traversible points out of " << total_points << " total");
 
     traversability_.setBasicLayers({"traversability", "elevation"});
 }
 
 void WorldModelling::findCurrentFrontiers(const float &x, const float &y, const float &theta, const ros::Time &time)
 {
+    /**
+     * TODO -- want to create frontiers that are sufficiently far away from the current location
+     * Also want to ensure that they are in traversible locations. Probably just draw a circle of
+     * fixed radius around the robot and go around the circle until we reach a traversible point
+     * Probably put them in a cone of sufficient angle around the robot
+     */ 
     // TODO: Here you need to create "frontiers" that denote the edges of the known space
     // They're used to guide robot to new places
 
@@ -212,6 +238,7 @@ void WorldModelling::updateFrontiers(const float &x, const float &y, const float
         float distance_to_frontier = std::hypot(frontier_x - x, frontier_y - y);
 
         // If it's close enough, skip
+        // TODO also delete frontiers if they are too far away
         if (distance_to_frontier < distance_to_delete_frontier_)
         {
             continue;
