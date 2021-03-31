@@ -46,8 +46,9 @@ void WorldModelling::readParameters(ros::NodeHandle &nh)
     nh.param("output_traversability_topic", output_traversability_topic_, std::string("/traversability"));
     nh.param("output_frontiers_topic", output_frontiers_topic_, std::string("/frontiers"));
     nh.param("node_creation_distance", node_creation_distance_, 1.f);
-    nh.param("neighbor_distance", neighbor_distance_, 2.f);
+    nh.param("neighbor_distance", neighbor_distance_, 1.f);
     nh.param("elevation_threshold", elevation_threshold_, 0.1f);
+    nh.param("neighbor_path_distance", neighbor_path_distance_, 5);
 
     nh.param("max_distance_to_search_frontiers", max_distance_to_search_frontiers_, 3.f);
     nh.param("distance_to_delete_frontier", distance_to_delete_frontier_, 2.5f);
@@ -57,6 +58,7 @@ void WorldModelling::readParameters(ros::NodeHandle &nh)
 void WorldModelling::elevationMapCallback(const grid_map_msgs::GridMap &in_grid_map)
 {
     // ROS_INFO("New elevation map received!");
+    
     // Convert grid map and store in local variable
     grid_map::GridMap grid_map;
     grid_map::GridMapRosConverter::fromMessage(in_grid_map, grid_map);
@@ -91,41 +93,73 @@ void WorldModelling::elevationMapCallback(const grid_map_msgs::GridMap &in_grid_
     publishData(grid_map_info);
 }
 
+float WorldModelling::distanceBetweenNodes(cdt_msgs::GraphNode n1, cdt_msgs::GraphNode n2)
+{
+    float x1 = n1.pose.position.x; 
+    float y1 = n1.pose.position.y; 
+    float x2 = n2.pose.position.x; 
+    float y2 = n2.pose.position.y; 
+    
+    ROS_INFO_STREAM("Distance" << std::hypot(x1 - x2, y1 - y2));
+    return std::hypot(x1 - x2, y1 - y2); 
+}
+
 bool WorldModelling::updateGraph(const float &x, const float &y, const float &theta)
 {
     // TODO: you need to update the exploration_graph_ using the current pose
 
     // You may need to change this flag with some conditions
-    bool create_new_node = true;
+    bool create_new_node = false;
+    float distance_from_last = std::hypot(x - x_last_, y - y_last_);
 
-    // if the condition is satisfied, you should create a new node and add it to the graph
-    if(first_node_)
-    {
-        // Here we briefly show how to fill the data
-        cdt_msgs::GraphNode new_node;
-        new_node.pose.position.x = x;
-        new_node.pose.position.y = y;
-        new_node.id.data = num_nodes_; // The id is simply the number of the node
-        
-        // Adding neighbors
-        std_msgs::Int32 neighbor_id;
-        neighbor_id.data = 0;
-        new_node.neighbors_id.push_back(neighbor_id);  // here we fill the neighbors of the new_node
-
-        // Finally add the new node to the graph (since all the properties are filled)
-        exploration_graph_.nodes.push_back(new_node);
-
-        num_nodes_++; // Increase the number of added nodes
-
-        first_node_ = false; // This is to avoid creating more than one nodes. This is just for the example, you may need to remove this
-
-        return true;
+    if (distance_from_last > node_creation_distance_ || first_node_) {
+        create_new_node = true;
+        first_node_ = false; // This is to avoid creating more than one nodes
     }
-    else
-    {
-        // We didn't create a new node
+
+    if (!create_new_node) {
         return false;
     }
+
+    // Create the new node
+    cdt_msgs::GraphNode new_node;
+    new_node.pose.position.x = x;
+    new_node.pose.position.y = y;
+    new_node.id.data = num_nodes_; // The id is simply the number of the node
+    
+    // Update position of last node
+    x_last_ = x;
+    y_last_ = y;
+
+    // For all nodes other than the first, check for neighbours
+    if(!first_node_)
+    {
+
+        for (int i = 0; i < num_nodes_; i++) {
+            ROS_INFO_STREAM("Neighbour distance " << neighbor_distance_);
+            ROS_INFO_STREAM("Neighbour path distance " << neighbor_path_distance_ << ", " << new_node.id.data - i << ", " << i);
+            if (distanceBetweenNodes(new_node, exploration_graph_.nodes[i]) > neighbor_distance_) 
+            {
+                continue;
+            }
+            if (new_node.id.data - i < neighbor_path_distance_)
+            {
+                continue;
+            }
+
+            // Add this node as a neighbour
+            std_msgs::Int32 neighbor;
+            neighbor.data = i;
+            new_node.neighbors_id.push_back(neighbor);  
+        }
+
+    }
+
+    // Finally add the new node to the graph (since all the properties are filled)
+    exploration_graph_.nodes.push_back(new_node);
+
+    num_nodes_++; // Increase the number of added nodes
+    return true;
 }
 
 void WorldModelling::computeTraversability(const grid_map::GridMap &grid_map)

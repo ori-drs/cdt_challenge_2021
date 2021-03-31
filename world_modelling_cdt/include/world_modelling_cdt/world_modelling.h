@@ -38,6 +38,7 @@ class WorldModelling
     std::string input_fixed_frame_;
     std::string input_base_frame_;
     float neighbor_distance_;
+    int neighbor_path_distance_;
     float node_creation_distance_;
     float elevation_threshold_;
     float max_distance_to_search_frontiers_;
@@ -92,4 +93,5 @@ private:
 
     // Utils
     void getRobotPose(float &x, float &y, float &theta);
+    float distanceBetweenNodes(cdt_msgs::GraphNode n1, cdt_msgs::GraphNode n2);
 };

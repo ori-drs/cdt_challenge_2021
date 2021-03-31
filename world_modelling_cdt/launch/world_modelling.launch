@@ -8,9 +8,11 @@
   <arg name="output_graph_topic"           default="/exploration_graph"/>
   <arg name="output_traversability_topic"  default="/traversability"/>
   <arg name="output_frontiers_topic"       default="/frontiers"/>
+  
   <arg name="node_creation_distance"       default="1.0"/>
   <arg name="neighbor_distance"            default="2.0"/>
   <arg name="elevation_threshold"          default="0.1"/>
+  <arg name="neighbour_path_distance"      default="5"/>
   
 
   <!-- Launch object detector -->
