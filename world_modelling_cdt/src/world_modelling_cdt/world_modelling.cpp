@@ -51,6 +51,7 @@ void WorldModelling::readParameters(ros::NodeHandle &nh)
 
     nh.param("max_distance_to_search_frontiers", max_distance_to_search_frontiers_, 3.f);
     nh.param("distance_to_delete_frontier", distance_to_delete_frontier_, 2.5f);
+    nh.param("max_distance_to_delete_frontier", max_distance_to_delete_frontier_, 2.5f);
     nh.param("frontiers_search_angle_resolution", frontiers_search_angle_resolution_, 0.5f);
 }
 
@@ -110,6 +111,13 @@ bool WorldModelling::updateGraph(const float &x, const float &y, const float &th
 
     // check that no other nodes are close to this graph node
     bool create_new_node = true;
+    
+    cdt_msgs::GraphNode last_node;
+    last_node.pose.position.x = x_last_;
+    last_node.pose.position.y = y_last_;
+    if (distance(new_node, last_node) < node_creation_distance_) {
+        return false;
+    }
 
     for (auto node: exploration_graph_.nodes) {
         if (distance(new_node, node) < node_creation_distance_) {
@@ -152,7 +160,7 @@ void WorldModelling::computeTraversability(const grid_map::GridMap &grid_map)
     traversability_.add("traversability", 0.0);
 
     // Iterate the traversability map to apply a threshold on the height
-    uint32_t traversible_points = 0;
+    uint32_t traversable_points = 0;
     uint32_t total_points = 0;
     for (grid_map::GridMapIterator iterator(traversability_); !iterator.isPastEnd(); ++iterator)
     {
@@ -166,12 +174,12 @@ void WorldModelling::computeTraversability(const grid_map::GridMap &grid_map)
             }
             else {
                 traversability_.at("traversability", *iterator) = 1.0;
-                traversible_points++;
+                traversable_points++;
             }
             total_points++;
         }
     }
-    ROS_INFO_STREAM("Found " << traversible_points << " traversible points out of " << total_points << " total");
+    ROS_DEBUG_STREAM("Found " << traversable_points << " traversable points out of " << total_points << " total");
 
     traversability_.setBasicLayers({"traversability", "elevation"});
 }
@@ -180,30 +188,26 @@ void WorldModelling::findCurrentFrontiers(const float &x, const float &y, const 
 {
     /**
      * TODO -- want to create frontiers that are sufficiently far away from the current location
-     * Also want to ensure that they are in traversible locations. Probably just draw a circle of
-     * fixed radius around the robot and go around the circle until we reach a traversible point
-     * Probably put them in a cone of sufficient angle around the robot
+     * Also want to ensure that they are in traversable locations. Probably just draw a circle of
+     * fixed radius around the robot and go around the circle until we reach a traversable point
      */ 
-    // TODO: Here you need to create "frontiers" that denote the edges of the known space
-    // They're used to guide robot to new places
-
-    // If the direction needs a frontier, create one and store in current frontiers
-    if (first_frontier_)
-    {
-        // We create the frontier as a stamped point
-
-        // In this example we set a frontier 5 meters ahead of the robot
-        // The frontiers are expresed in the fixed frame
+    // Clear frontiers array at each time step
+    current_frontiers_.frontiers.clear(); 
+    for (double angle = -M_PI; angle < M_PI; angle += frontiers_search_angle_resolution_) {
+        double frontier_x = x + max_distance_to_search_frontiers_ * std::cos(angle);
+        double frontier_y = y + max_distance_to_search_frontiers_ * std::sin(angle);
         geometry_msgs::PointStamped frontier;
         frontier.header.stamp = time;                  // We store the time the frontier was created
         frontier.header.frame_id = input_fixed_frame_; // And the frame it's referenced to
-        frontier.point.x = x + 5.0;                    // And the position, of course
-        frontier.point.y = y;
-
-        // Finally we store it in the current frontiers' list
-        current_frontiers_.frontiers.push_back(frontier);
-
-        first_frontier_ = false; // This is to avoid creating more than one frontiers. This is just for the example, you may need to remove this
+        frontier.point.x = frontier_x;
+        frontier.point.y = frontier_y;
+        Eigen::Vector2d position(frontier_x, frontier_y);
+        bool is_inside = traversability_.isInside(position);
+        bool is_traversable = traversability_.atPosition("traversability", position) == 1.0;
+        ROS_DEBUG_STREAM("IsInside: " << is_inside);
+        ROS_DEBUG_STREAM("IsTraversible: " << is_traversable);
+        if (is_inside && is_traversable)
+            current_frontiers_.frontiers.push_back(frontier);
     }
 
     ROS_DEBUG_STREAM("[WorldModelling] Found " << current_frontiers_.frontiers.size() << " new frontiers");
@@ -238,8 +242,8 @@ void WorldModelling::updateFrontiers(const float &x, const float &y, const float
         float distance_to_frontier = std::hypot(frontier_x - x, frontier_y - y);
 
         // If it's close enough, skip
-        // TODO also delete frontiers if they are too far away
-        if (distance_to_frontier < distance_to_delete_frontier_)
+        // also delete frontiers if they are too far away
+        if (distance_to_frontier < distance_to_delete_frontier_ || distance_to_frontier > max_distance_to_delete_frontier_)
         {
             continue;
         }
