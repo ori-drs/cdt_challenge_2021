@@ -30,17 +30,21 @@ ObjectDetector::ObjectDetector(ros::NodeHandle &nh)
     barrow_real_height_     = 0.7;   // meters, note: includes the wheel and frame 
     computer_real_height_   = 0.5;   // meters 
     dog_real_height_        = 0.418; // meters, note: includes legs 
-    angle_margin_ = 2*180/M_PI;
+    angle_margin_ = 2*M_PI/180;
 }
 
 void ObjectDetector::getObjectPosition(const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x_out, double &y_out, double &z_out)
 {
     sensor_msgs::PointCloud2 pc2_msg_lidar, pc2_msg_cam;
 
-    findClosestLidarScan(imgheader.stamp,pc2_msg_lidar);
-    // Transform point cloud in camera frame
-    pcl_ros::transformPointCloud(imgheader.frame_id, pc2_msg_lidar, pc2_msg_cam, tf_listener_);
+    if (!findClosestLidarScan(imgheader.stamp,pc2_msg_lidar))
+    {
+        return;
+    }
 
+    // Transform point cloud in camera frame
+    pcl_ros::transformPointCloud("image_frame", pc2_msg_lidar, pc2_msg_cam, tf_listener_);
+    
     // convert point cloud to PCL
     pcl::PCLPointCloud2 pcl_pc;
     pcl_conversions::toPCL(pc2_msg_cam, pcl_pc);
@@ -53,7 +57,7 @@ void ObjectDetector::getObjectPosition(const float &pixelx, const float &pixely,
     double vert_angle = atan((pixely-camera_cy_)/camera_fy_);
 
     std::vector<pcl::PointXYZ> points;
-    double x,y,z, angle_hor, angle_ver;
+    double x,y,z, curr_hor_angle, curr_vert_angle;
 
     for (int i; i<pcl_xyz.points.size(); i++)
     {
@@ -61,57 +65,29 @@ void ObjectDetector::getObjectPosition(const float &pixelx, const float &pixely,
         y = pcl_xyz.points[i].y;
         z = pcl_xyz.points[i].z;
 
-        if (x<0.0)
+        if (z<0.0)
         {
             continue;
         }
+        curr_hor_angle = atan2(x,z);
+        curr_vert_angle = atan2(y,z);
 
-        angle_hor = atan2(x,z);
-        angle_ver = atan2(y,z);
-
-        if ((abs(angle_hor- hor_angle)<angle_margin_) && (abs(angle_ver - vert_angle)< angle_margin_))
+        if ((abs(curr_hor_angle- hor_angle)<angle_margin_) && (abs(curr_vert_angle - vert_angle)< angle_margin_))
         {
             points.push_back(pcl_xyz.points[i]);
+            // ROS_INFO("Angles %f %f", curr_hor_angle, curr_vert_angle);
+            // ROS_INFO("Pos %f %f %f", x, y, z);
         }
     }
 
-    // int n = points.size();
-    // if (n!=0)
-    // {
-    //     x_out = accumulate(points.x)
-    // }
-    pcl::PointXYZ temp_point = points.front();
-    x_out= temp_point.x;
-    y_out= temp_point.y;
-    z_out= temp_point.z;
-
-    ROS_INFO("%f %f %f", x_out, y_out, z_out);
-
-    
-    // pcl::PCLPointCloud2 transformed_pcl;
-    
-    // // Get current pose
-    // tf::StampedTransform lidar_to_camera_tf;
-    // tf_listener_.waitForTransform(pc2_msg.header.frame_id, imgheader.frame_id,  ros::Time(0), ros::Duration(0.5));
-    // try
-    // {
-    //     tf_listener_.lookupTransform(pc2_msg.header.frame_id, imgheader.frame_id, ros::Time(0), lidar_to_camera_tf);
-    // }
-    // catch (tf::TransformException &ex)
-    // {
-    //     ROS_ERROR("%s", ex.what());
-    // }
-
-    // Eigen::Affine3d lidar_to_camera_eigen;
-    // tf::Transform lidar_to_camera(lidar_to_camera_tf);
-    // tf::transformTFToEigen(lidar_to_camera, lidar_to_camera_eigen);
-
-    // // transform point cloud
-    // // TODO Check transform is the right way
-    // pcl::transformPointCloud(pcl_pc, transformed_pcl, lidar_to_camera_eigen);
-
-
-
+    if (points.size() > 0)
+    {
+        pcl::PointXYZ temp_point = points.front();
+        x_out= temp_point.x;
+        y_out= temp_point.y;
+        z_out= temp_point.z;
+        // ROS_INFO("%f %f %f", x_out, y_out, z_out);
+    }
 }
 
 void ObjectDetector::readParameters(ros::NodeHandle &nh)
@@ -157,7 +133,7 @@ bool ObjectDetector::findClosestLidarScan(const ros::Time &time_query, sensor_ms
 {
     double smallest_time_diff = 1000;
     double curr_time_diff;
-    unsigned best_elem_idx = 0;
+    unsigned best_elem_idx = -1;
     for (unsigned i=0; i<recent_lidar_scans_.size(); i++){
     // for (auto it = recent_lidar_scans_.begin(); it != recent_lidar_scans_.end(); ++it) {
         curr_time_diff = abs((time_query - recent_lidar_scans_[i].header.stamp).toSec());
@@ -171,8 +147,18 @@ bool ObjectDetector::findClosestLidarScan(const ros::Time &time_query, sensor_ms
             break;
         }
     }
-    point_cloud = recent_lidar_scans_[best_elem_idx];
+    // No scan found
+    if (best_elem_idx == -1)
+    {
+        return false;
+    }
+    // ROS_ERROR("Index %d", best_elem_idx);
+    // ROS_ERROR("Size %d", recent_lidar_scans_.size());
+    sensor_msgs::PointCloud2 out(recent_lidar_scans_[best_elem_idx]);
+    // point_cloud = ();
     recent_lidar_scans_.erase(recent_lidar_scans_.begin()+best_elem_idx,recent_lidar_scans_.end());
+    point_cloud = out;
+    return true;
 }
 
 void ObjectDetector::lidarCallback(const sensor_msgs::PointCloud2 in_msg)
@@ -191,7 +177,9 @@ void ObjectDetector::lidarCallback(const sensor_msgs::PointCloud2 in_msg)
 void ObjectDetector::imageCallback(const sensor_msgs::ImageConstPtr &in_msg)
 {
     double x_out, y_out, z_out;
-    getObjectPosition(0, 0, in_msg->header, x_out, y_out, z_out);
+    // ROS_INFO(in_msg->header.frame_id);
+    std_msgs::Header h = in_msg->header;
+    getObjectPosition(camera_cx_, camera_cy_, h, x_out, y_out, z_out);
 
     ROS_DEBUG("New image received!");
 
