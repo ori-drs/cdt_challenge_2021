@@ -134,6 +134,9 @@ bool WorldModelling::updateGraph(const float &x, const float &y, const float &th
     // For all nodes other than the first, check for neighbours
     if(!first_node_)
     {
+        // Node id for current node to add as neighbour to previous nodes
+        std_msgs::Int32 new_node_id;
+        new_node_id.data = num_nodes_;
 
         for (int i = 0; i < num_nodes_; i++) {
             ROS_INFO_STREAM("Neighbour distance " << neighbor_distance_);
@@ -151,8 +154,10 @@ bool WorldModelling::updateGraph(const float &x, const float &y, const float &th
             std_msgs::Int32 neighbor;
             neighbor.data = i;
             new_node.neighbors_id.push_back(neighbor);  
-        }
 
+            // Also update the neighbours of the previous node
+            exploration_graph_.nodes[i].neighbors_id.push_back(new_node_id);
+        }
     }
 
     // Finally add the new node to the graph (since all the properties are filled)
