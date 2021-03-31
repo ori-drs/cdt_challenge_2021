@@ -61,6 +61,7 @@ class ObjectDetector
     std::string input_lidar_topic_;
     std::string base_frame_;
     std::string fixed_frame_;
+    std::string image_frame_;
 
     // Output topics
     std::string output_objects_topic_;
@@ -114,25 +115,5 @@ private:
     bool recognizeObject(const cv::Mat &in_image, const Colour &colour, const std_msgs::Header &in_header, 
                                   double& x_map, double& y_map, double& z_map);
                                   
-    bool recognizeDog(const cv::Mat &in_image, const ros::Time &in_timestamp, 
-                      const double& robot_x, const double& robot_y, const double& robot_theta,
-                      cdt_msgs::Object &out_new_object);
-
-    bool recognizeBarrow(const cv::Mat &in_image, const ros::Time &in_timestamp, 
-                      const double& robot_x, const double& robot_y, const double& robot_theta,
-                      cdt_msgs::Object &out_new_object);
-
-    bool recognizeBox(const cv::Mat &in_image, const ros::Time &in_timestamp, 
-                      const double& robot_x, const double& robot_y, const double& robot_theta,
-                      cdt_msgs::Object &out_new_object);
-
-    bool recognizeBarrel(const cv::Mat &in_image, const ros::Time &in_timestamp, 
-                      const double& robot_x, const double& robot_y, const double& robot_theta,
-                      cdt_msgs::Object &out_new_object);
-
-
-    
-    // Utils
-    void getRobotPose(double &x, double &y, double &theta);
     bool wasObjectDetected(std::string object_name);
 };
