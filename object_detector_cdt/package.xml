@@ -21,6 +21,8 @@
   <depend>tf</depend>
   <depend>cdt_msgs</depend>
   <depend>sensor_msgs</depend>
+  <depend>tf_conversions</depend>
+  <depend>pcl_ros</depend>
   <export>
   </export>
 </package>

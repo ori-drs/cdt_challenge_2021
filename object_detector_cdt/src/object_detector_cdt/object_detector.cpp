@@ -10,6 +10,7 @@ ObjectDetector::ObjectDetector(ros::NodeHandle &nh)
     image_transport::ImageTransport it(nh);
     image_sub_ = it.subscribe(input_image_topic_, 1, &ObjectDetector::imageCallback, this);
     lidar_sub_ = nh.subscribe(input_lidar_topic_,10, &ObjectDetector::lidarCallback, this);
+    
     // Setup publisher
     objects_pub_ = nh.advertise<cdt_msgs::ObjectList>(output_objects_topic_, 10);
 
@@ -29,6 +30,38 @@ ObjectDetector::ObjectDetector(ros::NodeHandle &nh)
     barrow_real_height_     = 0.7;   // meters, note: includes the wheel and frame 
     computer_real_height_   = 0.5;   // meters 
     dog_real_height_        = 0.418; // meters, note: includes legs 
+}
+
+void ObjectDetector::getObjectPosition(const sensor_msgs::PointCloud2 &in_msg, 
+const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x, double &y, double &z)
+{
+    // convert point cloud to PCL
+    pcl::PCLPointCloud2 pcl_pc;
+    pcl_conversions::toPCL(in_msg, pcl_pc);
+
+    pcl::PCLPointCloud2 transformed_pcl;
+    
+    // Get current pose
+    tf::StampedTransform lidar_to_camera_tf;
+    tf_listener_.waitForTransform(in_msg.header.frame_id, imgheader.frame_id,  ros::Time(0), ros::Duration(0.5));
+    try
+    {
+        tf_listener_.lookupTransform(in_msg.header.frame_id, imgheader.frame_id, ros::Time(0), lidar_to_camera_tf);
+    }
+    catch (tf::TransformException &ex)
+    {
+        ROS_ERROR("%s", ex.what());
+    }
+
+    Eigen::Affine3f lidar_to_camera_eigen;
+    tf::Transform lidar_to_camera(&lidar_to_camera_tf);
+    tf::transformTFToEigen(lidar_to_camera, lidar_to_camera_eigen);
+
+    // transform point cloud
+    pcl::transformPointCloud(pcl_pc, transformed_pcl, lidar_to_camera_eigen);
+
+
+
 }
 
 void ObjectDetector::readParameters(ros::NodeHandle &nh)

@@ -22,6 +22,14 @@
 #include <opencv2/highgui.hpp>
 #include <iostream>
 
+//PointCloud stuff
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_types.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/conversions.h>
+#include <pcl_ros/transforms.h>
+#include <tf_conversions/tf_eigen.h>
+
 // Colours
 enum Colour { RED=0, YELLOW=0, GREEN=1,  BLUE=2 };
 
@@ -74,6 +82,10 @@ public:
 private:
     // Read ROS parameters
     void readParameters(ros::NodeHandle &nh);
+
+    //Determine object position
+    void getObjectPosition(const sensor_msgs::PointCloud2 &in_msg, const float &pixelx, const float &pixely, const std_msgs::Header &imgheader, double &x, double &y, double &z);
+
 
     // The callback implements all the actions
     void imageCallback(const sensor_msgs::ImageConstPtr &in_msg);

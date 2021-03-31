@@ -13,6 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf2
   tf2_ros
   tf
+  tf_conversions
+  pcl_ros
   cdt_msgs
   sensor_msgs
 )
@@ -31,6 +33,8 @@ catkin_package(
                  tf2
                  tf2_ros
                  tf
+                 tf_conversions
+                 pcl_ros
                  cdt_msgs
                  sensor_msgs
   DEPENDS OpenCV
