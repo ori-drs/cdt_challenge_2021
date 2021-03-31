@@ -34,7 +34,7 @@
     <param name="distance_to_delete_frontier"         value="4.0"/>
     <param name="frontiers_search_angle_resolution"   value="20"/> <!-- Degrees -->
 
-    <param name="trav_check_distance"                 value="0.5"/>
+    <param name="trav_check_distance"                 value="0.3"/>
     <param name="trav_gradient_limit"                 value="0.1"/>
   
   </node>
