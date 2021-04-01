@@ -71,5 +71,6 @@ public:
                 const Eigen::Vector2d& pose_goals,
                 std::vector<Eigen::Vector2d>& route);
 
+    bool isStraightPathValid(const Eigen::Isometry3d& pose1, const Eigen::Isometry3d& pose2, float step);
 
 };

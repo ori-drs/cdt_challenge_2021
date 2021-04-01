@@ -234,3 +234,29 @@ bool LocalPlanner::isPoseValid(const Eigen::Isometry3d& pose)
 
     return true;
 }
+
+bool LocalPlanner::isStraightPathValid(const Eigen::Isometry3d& pose1, const Eigen::Isometry3d& pose2, float step)
+{
+    float x1 = pose1.translation().x();
+    float y1 = pose1.translation().y();
+    float x2 = pose2.translation().x();
+    float y2 = pose2.translation().y();
+
+    float dist = std::hypot(x1 - x2, y1 - y2);
+    float unit_x = (x2 - x1) / dist;
+    float unit_y = (y2 - y1) / dist;
+    int num_steps = (dist / step) + 1;
+
+    Eigen::Isometry3d pose;
+
+    
+    for (int i = 1; i < num_steps; i++) { 
+        pose.setIdentity();
+        pose.translate(Eigen::Vector3d(x1 + unit_x*step*i, y1 + unit_y*step*i, 0));
+        if (!isPoseValid(pose)) {
+            return false;
+        }
+    }
+
+    return true;
+}
