@@ -60,34 +60,36 @@ std::vector<Eigen::Vector2d> LocalPlanner::searchFrontiers(cdt_msgs::Frontiers f
     for(auto& frontier : frontier_costs){
         // We need to create a cost, lower cost is better    
         float distance_to_frontier = std::hypot(robot_x - frontier.x_, robot_y - frontier.y_);  
-        // float add_cost=1e5;
-        // for (auto node: graph_.nodes)
-        // {
-        //     double x_pos = node.pose.position.x;
-        //     double y_pos = node.pose.position.y;
+        float add_cost=0;
 
-        //     // Eigen::Quaterniond q(node.pose.orientation.w, node.pose.orientation.x, node.pose.orientation.y, node.pose.orientation.z);
-        //     // Eigen::AngleAxisd axis_angle(q);
-        //     // double phi = axis_angle.axis().z() * axis_angle.angle();
+        for (auto node: graph_.nodes)
+        {
+            double x_pos = node.pose.position.x;
+            double y_pos = node.pose.position.y;
 
-        //     double dist = std::hypot(x_pos - robot_x, y_pos - robot_y);
-        //     double hor_angle = abs(robot_theta -atan2(y_pos - robot_y, x_pos -robot_x));
+            // Eigen::Quaterniond q(node.pose.orientation.w, node.pose.orientation.x, node.pose.orientation.y, node.pose.orientation.z);
+            // Eigen::AngleAxisd axis_angle(q);
+            // double phi = axis_angle.axis().z() * axis_angle.angle();
 
-        //     double curr_cost = dist; // (10+hor_angle)/dist;
+            double dist = std::hypot(x_pos - frontier.x_, y_pos - frontier.y_);
+            //double hor_angle = abs(robot_theta -atan2(y_pos - robot_y, x_pos -robot_x));
 
-        //     if (curr_cost<add_cost)
-        //     {
-        //         add_cost = curr_cost;
-        //     }
+            //double curr_cost = dist; // (10+hor_angle)/dist;
 
-        // }
+
+            if (dist<2.0)
+            {
+                add_cost = 1000;
+                ROS_ERROR("%f", add_cost);
+                break;
+            }
+
+        }
         //double HYPER = 1.0;
 
-
-        
         double angle_f = atan2(frontier.y_ - robot_y, frontier.x_ -robot_x);
         //ROS_ERROR("%f %f %f \n %f %f %f",robot_theta, robot_x, robot_y, angle_f, frontier.x_, frontier.y_ );
-        frontier.cost_ = distance_to_frontier + 2.0*abs(robot_theta -angle_f);
+        frontier.cost_ = 2.0*distance_to_frontier + abs(robot_theta -angle_f) + add_cost;
     }
 
     // We want to sort the frontiers using the costs previously computed
