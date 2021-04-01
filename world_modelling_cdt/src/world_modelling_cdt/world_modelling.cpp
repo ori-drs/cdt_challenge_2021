@@ -346,19 +346,19 @@ void WorldModelling::findCurrentFrontiers(const float &x, const float &y, const 
     ROS_DEBUG_STREAM("[WorldModelling] Found " << current_frontiers_.frontiers.size() << " new frontiers");
 }
 
-bool WorldModelling::isTraversable(float x, float y) 
+int WorldModelling::isTraversable(float x, float y) 
 {
     grid_map::Position query_point(x, y);
     if (!traversability_.isInside(query_point)) 
     {
-        return false;
+        return 0;
     }
 
     if (traversability_.atPosition("traversability", query_point) < 0) 
     {
-        return false;
+        return -1;
     }
-    return true;
+    return 1;
 }
 
 void WorldModelling::updateFrontiers(const float &x, const float &y, const float &theta)
@@ -391,7 +391,7 @@ void WorldModelling::updateFrontiers(const float &x, const float &y, const float
         float distance_to_frontier = std::hypot(frontier_x - x, frontier_y - y);
 
         // If point is not traversable, skip
-        if (!isTraversable(frontier_x, frontier_y))
+        if (isTraversable(frontier_x, frontier_y) < 0)
         {
             continue;
         }
@@ -432,7 +432,7 @@ void WorldModelling::updateFrontiers(const float &x, const float &y, const float
         float distance_to_frontier = std::hypot(frontier_x - x, frontier_y - y);
 
         // If point is not traversable, skip
-        if (!isTraversable(frontier_x, frontier_y))
+        if (isTraversable(frontier_x, frontier_y) <= 0)
         {
             continue;
         }
