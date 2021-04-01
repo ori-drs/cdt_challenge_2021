@@ -119,6 +119,7 @@ void WorldExplorer::graphCallback(const cdt_msgs::Graph& in_graph)
 {
     // Set the graph structure to graph planner
     graph_planner_.setGraph(in_graph);
+    graph_ = in_graph;
 }
 
 void WorldExplorer::positionCtrlCallback(const std_msgs::Float32& in_status)
@@ -145,13 +146,6 @@ void WorldExplorer::run()
 
 }
 
-// void PlanTrip()
-// {
-//     // get the traversability map from world_modelling 
-//     // frontiers -- potential points of intreest 
-//     // can use RRT to find a route  
-// }
-
 void WorldExplorer::plan()
 {
  
@@ -167,7 +161,7 @@ void WorldExplorer::plan()
         getRobotPose2D(robot_x, robot_y, robot_theta);
         
         // Analyze and sort frontiers
-        std::vector<Eigen::Vector2d> goals = local_planner_.searchFrontiers(frontiers_, robot_x, robot_y, robot_theta);
+        std::vector<Eigen::Vector2d> goals = local_planner_.searchFrontiers(frontiers_, robot_x, robot_y, robot_theta, graph_);
 
 
         // TODO Choose a frontier, work it off if it is valid and send it to the position controller

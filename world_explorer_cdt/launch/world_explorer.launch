@@ -8,7 +8,7 @@
   <arg name="input_pos_ctrl_topic"    default="/position_controller/status"/>
   <arg name="input_base_frame"        default="base_link"/>
   <arg name="goal_frame"              default="odom"/>
-  <arg name="planning_time"           default="1.5"/>
+  <arg name="planning_time"           default="0.5"/>
   <arg name="path_execute_limit"      default="50"/> <!-- [0-100] percent of path that is to be executed -->
   <arg name="output_frontiers_topic"  default="/frontiers"/>
   <arg name="launch_prefix"           default=""/>
