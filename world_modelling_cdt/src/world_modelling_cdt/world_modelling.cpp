@@ -403,8 +403,7 @@ void WorldModelling::updateFrontiers(const float &x, const float &y, const float
         bool is_traversable = true; 
         
         for (int i = 1; i < num_steps; i++) { 
-            grid_map::Position pos(x + unit_x*step*i, y + unit_y*step*i);
-            if (traversability_.atPosition("traversability", pos) < 0) {
+            if (isTraversable(x + unit_x*step*i, y + unit_y*step*i) == -1) {
                 is_traversable = false;
                 break;
             }
@@ -459,8 +458,7 @@ void WorldModelling::updateFrontiers(const float &x, const float &y, const float
         bool is_traversable = true; 
         
         for (int i = 1; i < num_steps; i++) { 
-            grid_map::Position pos(x + unit_x*step*i, y + unit_y*step*i);
-            if (traversability_.atPosition("traversability", pos) < 0) {
+            if (isTraversable(x + unit_x*step*i, y + unit_y*step*i) == -1) {
                 is_traversable = false;
                 break;
             }

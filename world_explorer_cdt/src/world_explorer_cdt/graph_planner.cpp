@@ -76,9 +76,6 @@ void GraphPlanner::generateGraphFromMsg(Eigen::MatrixXd & graph)
                 graph(neighbour_id.data, node.id.data) = graph(node.id.data, neighbour_id.data);
             }
         }
-
-
-
     }
     // TODO fill the graph representation
 }

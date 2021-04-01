@@ -65,7 +65,7 @@ public:
 
     // Main methods
     std::vector<Eigen::Vector2d> searchFrontiers(cdt_msgs::Frontiers frontiers, 
-                                                 const double& robot_x, const double&  robot_y, const double&  robot_theta);
+                                                 const double& robot_x, const double&  robot_y, const double&  robot_theta, cdt_msgs::Graph graph_);
     
     bool planPath(const double& robot_x, const double& robot_y , const double& robot_theta,
                 const Eigen::Vector2d& pose_goals,

@@ -81,6 +81,7 @@ class WorldExplorer
     // Planers
     LocalPlanner local_planner_;
     GraphPlanner graph_planner_;
+    cdt_msgs::Graph graph_;
 
     // Route
     std::vector<Eigen::Vector2d> route_;
