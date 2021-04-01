@@ -2,7 +2,7 @@
 <launch>
   <arg name="joystick"              default="false"/>
   <arg name="full"                  default="true"/>
-  <arg name="world"                 default="arena_simple"/>
+  <arg name="world"                 default="arena_flat"/>
   <arg name="run_ui"                default="true"/>
   <arg name="rqt_perspective_path"  default="$(find jackal_runtime_cdt)/config/rqt/cdt_challenge.perspective"/>
 

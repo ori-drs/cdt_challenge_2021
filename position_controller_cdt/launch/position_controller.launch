@@ -4,7 +4,7 @@
   <!-- Set the topics -->
   <arg name="input_goal_topic"                  default="/world_explorer/goal"/>
   <arg name="input_base_frame"                  default="/base_link"/>
-  <arg name="input_goal_distance_threshold"     default="0.5"/>
+  <arg name="input_goal_distance_threshold"     default="0.2"/>
   <arg name="input_goal_orientation_threshold"  default="1.0"/>
   <arg name="output_twist_topic"                default="/cmd_vel"/>
   <arg name="control_rate"                      default="100.0"/>
