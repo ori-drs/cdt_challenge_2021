@@ -5,6 +5,7 @@
   <arg name="world"                 default="arena_simple"/>
   <arg name="run_ui"                default="true"/>
   <arg name="rqt_perspective_path"  default="$(find jackal_runtime_cdt)/config/rqt/cdt_challenge.perspective"/>
+  <arg name="rviz_path"             default="$(find jackal_runtime_cdt)/launch/view_competition.launch"/>
 
   <!-- World (mesh) parameters -->
   <rosparam file="$(find jackal_runtime_cdt)/config/rviz/world.yaml" subst_value="true"/>
@@ -18,7 +19,7 @@
   </include>
 
   <!-- Rviz -->
-  <include file="$(find jackal_runtime_cdt)/launch/view_jackal.launch"/>
+  <include file="$(arg rviz_path)"/>
 
   <!-- RQT/User Interface -->
   <group if="$(arg run_ui)">
