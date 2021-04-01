@@ -197,7 +197,8 @@ void WorldExplorer::plan()
             Eigen::Isometry3d pose2;
 
             int i = 0;
-            while (i < route_.size()) 
+            bool push_goal_forwards = true;
+            while (push_goal_forwards && i < route_.size()) 
             {
                 pose2.setIdentity();
                 pose2.translate(Eigen::Vector3d(route_[i].x(), route_[i].y(), 0));
